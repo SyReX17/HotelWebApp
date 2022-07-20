@@ -18,7 +18,7 @@ namespace HotelWebApp
             {
                 if (await db.Users.FirstOrDefaultAsync(u => u.Email == email && u.Password == password) == null)
                 {
-                    User user = new User() { Email = email, Password = password, Role = (byte)Role.User };
+                    User user = new User() { Id = Guid.NewGuid().ToString(), Email = email, Password = password, Role = (byte)Role.User };
                     await db.Users.AddAsync(user);
                     await db.SaveChangesAsync();
                 }

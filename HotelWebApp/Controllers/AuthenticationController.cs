@@ -35,7 +35,7 @@ namespace HotelWebApp.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             await context.SignInAsync(claimsPrincipal);
-            return Results.Redirect("/");
+            return Results.Ok();
         }
 
         public async static Task<IResult> Register(LoginData loginData, HttpContext context)
@@ -47,7 +47,7 @@ namespace HotelWebApp.Controllers
             }
 
             await UsersRepository.AddUserAsync(loginData.Email, loginData.Password);
-            return Results.Redirect("/login");
+            return Results.Ok();
         }
 
         public async static Task<IResult> Logout(HttpContext context)

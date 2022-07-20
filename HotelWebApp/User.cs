@@ -4,7 +4,8 @@ namespace HotelWebApp
 {
     public class User
     {
-        public int Id { get; set; }
+        [MaxLength(36)]
+        public string Id { get; set; }
         [MaxLength(50)]
         public string Email { get; set; }
         [MaxLength(50)]
