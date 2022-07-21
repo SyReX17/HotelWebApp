@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using HotelWebApp.Exceptions;
+using HotelWebApp.Repositories;
 
 namespace HotelWebApp.Controllers
 {
@@ -12,19 +14,16 @@ namespace HotelWebApp.Controllers
             await context.Response.WriteAsync("Access Denied");
         }
 
-        public async static Task<IResult> Login(LoginData loginData, HttpContext context)
+        public static async Task<IResult> Login(LoginData loginData, HttpContext context)
         {
-            Console.WriteLine(loginData.Email);
-            Console.WriteLine(loginData.Password);
             if (loginData.Email == "" || loginData.Password == "")
             {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync("Email и/или пароль не установлены");
+                throw new RequestException("Email и/или пароль не установлены");
             }
 
             User? user = await UsersRepository.GetUserAsync(loginData.Email, loginData.Password);
 
-            if (user == null) return Results.Unauthorized();
+            if (user == null) throw new AuthenticationException("Пользователь не найден");
 
             var role = (Role)user.Role;
             var claims = new List<Claim>
@@ -38,19 +37,18 @@ namespace HotelWebApp.Controllers
             return Results.Ok();
         }
 
-        public async static Task<IResult> Register(LoginData loginData, HttpContext context)
+        public static async Task<IResult> Register(LoginData loginData, HttpContext context)
         {
             if (loginData.Email == "" || loginData.Password == "")
             {
-                context.Response.StatusCode = 400;
-                await context.Response.WriteAsync("Email и/или пароль не установлены");
+                throw new RequestException("Email и/или пароль не установлены");
             }
 
             await UsersRepository.AddUserAsync(loginData.Email, loginData.Password);
             return Results.Ok();
         }
 
-        public async static Task<IResult> Logout(HttpContext context)
+        public static async Task<IResult> Logout(HttpContext context)
         {
             await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Results.Ok();

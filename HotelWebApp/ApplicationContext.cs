@@ -1,11 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using HotelWebApp;
+
 public class ApplicationContext : DbContext
 {
     public DbSet<User> Users { get; set; } = null!;
+    
     public DbSet<HotelRoom> Rooms { get; set; } = null!;
+    
     public DbSet<HotelRoomType> RoomTypes { get; set; } = null!;
+    
     public DbSet<Session> Sessions { get; set; } = null!;
+    
     public ApplicationContext()
     {
         Database.EnsureCreated();
