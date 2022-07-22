@@ -3,6 +3,7 @@
     public enum Role : byte
     {
         Admin,
+        
         User
     }
 }

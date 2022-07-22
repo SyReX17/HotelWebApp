@@ -8,10 +8,10 @@ namespace HotelWebApp
         [JsonPropertyName("email")]
         [Required]
         [EmailAddress]
-        public string Email { get; } = null!;
+        public string Email { get; set; } = null!;
         
         [JsonPropertyName("password")]
         [Required]
-        public string Password { get; } = null!;
+        public string Password { get; set; } = null!;
     }
 }

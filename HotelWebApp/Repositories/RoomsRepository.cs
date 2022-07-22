@@ -2,7 +2,7 @@
 
 namespace HotelWebApp.Repositories
 {
-    public static class RoomsRepository
+    public class RoomsRepository
     {
         
     }

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using HotelWebApp;
-using HotelWebApp.Controllers;
 
 var builder = WebApplication.CreateBuilder();
 builder.Services.AddControllers();
@@ -14,6 +13,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 

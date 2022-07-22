@@ -14,13 +14,9 @@ public static class ErrorHandler
             case AuthenticationException:
                 context.Response.StatusCode = 401;
                 break;
-                
-            case RequestException:
-                context.Response.StatusCode = 400;
-                break;
             
-            case ValidationException:
-                context.Response.StatusCode = 400;
+            case AccessException:
+                context.Response.StatusCode = 403;
                 break;
                 
             default:
