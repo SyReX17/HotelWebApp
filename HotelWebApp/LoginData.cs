@@ -1,13 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace HotelWebApp
 {
-    public record class LoginData()
+    public class LoginData
     {
-        [EmailAddress]
-        public string Email { get; }
-        
+        [JsonPropertyName("email")]
         [Required]
-        public string Password { get; }
+        [EmailAddress]
+        public string Email { get; } = null!;
+        
+        [JsonPropertyName("password")]
+        [Required]
+        public string Password { get; } = null!;
     }
 }

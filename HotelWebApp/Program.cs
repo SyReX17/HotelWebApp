@@ -3,6 +3,7 @@ using HotelWebApp;
 using HotelWebApp.Controllers;
 
 var builder = WebApplication.CreateBuilder();
+builder.Services.AddControllers();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -33,9 +34,8 @@ if (app.Environment.IsDevelopment())
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapPost("/login", async (LoginData loginData, HttpContext context) => await AuthenticationController.Login(loginData, context));
-app.MapPost("/register", async (LoginData loginData, HttpContext context) => await AuthenticationController.Register(loginData, context));
-app.MapGet("/accessdenied", async (HttpContext context) => await AuthenticationController.Deny(context));
-app.MapDelete("/logout", async (HttpContext context) => await AuthenticationController.Logout(context));
+app.UseRouting();
+
+app.MapControllers();
 
 app.Run();

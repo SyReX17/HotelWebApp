@@ -3,25 +3,31 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Repositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebApp.Controllers
 {
-    public static class AuthenticationController
+    [ApiController]
+    [Route("auth")]
+    public class AuthenticationController : ControllerBase
     {
-        public static async Task Deny(HttpContext context)
+        [HttpGet("accessdenied")]
+        public async Task Deny()
         {
-            context.Response.StatusCode = 403;
-            await context.Response.WriteAsync("Access Denied");
+            HttpContext.Response.StatusCode = 403;
+            await HttpContext.Response.WriteAsync("Access Denied");
         }
 
-        public static async Task<IResult> Login(LoginData loginData, HttpContext context)
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody]LoginData loginData)
         {
-            if (loginData.Email == "" || loginData.Password == "")
+            Console.WriteLine(loginData.Email);
+            Console.WriteLine(loginData.Password);
+            if (!ModelState.IsValid)
             {
-                throw new RequestException("Email и/или пароль не установлены");
+                throw new ValidationException("Данные введены неверно");
             }
-
-            User? user = await UsersRepository.GetUserAsync(loginData.Email, loginData.Password);
+            var user = await UsersRepository.GetUserAsync(loginData.Email, loginData.Password);
 
             if (user == null) throw new AuthenticationException("Пользователь не найден");
 
@@ -33,25 +39,29 @@ namespace HotelWebApp.Controllers
             };
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-            await context.SignInAsync(claimsPrincipal);
-            return Results.Ok();
+            await HttpContext.SignInAsync(claimsPrincipal);
+            return Ok();
         }
-
-        public static async Task<IResult> Register(LoginData loginData, HttpContext context)
+        
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] LoginData loginData)
         {
-            if (loginData.Email == "" || loginData.Password == "")
+            Console.WriteLine(loginData.Email);
+            Console.WriteLine(loginData.Password);
+            if (!ModelState.IsValid)
             {
-                throw new RequestException("Email и/или пароль не установлены");
+                throw new ValidationException("Данные введены неверно");
             }
 
             await UsersRepository.AddUserAsync(loginData.Email, loginData.Password);
-            return Results.Ok();
+            return Ok();
         }
 
-        public static async Task<IResult> Logout(HttpContext context)
+        [HttpDelete("logout")]
+        public async Task<IActionResult> Logout()
         {
-            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Results.Ok();
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Ok();
         }
     }
 }

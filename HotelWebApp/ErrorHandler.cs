@@ -18,6 +18,10 @@ public static class ErrorHandler
             case RequestException:
                 context.Response.StatusCode = 400;
                 break;
+            
+            case ValidationException:
+                context.Response.StatusCode = 400;
+                break;
                 
             default:
                 context.Response.StatusCode = 500;
