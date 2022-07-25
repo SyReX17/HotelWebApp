@@ -13,26 +13,14 @@ namespace HotelWebApp.Repositories
         /// </summary>
         private ApplicationContext _db = new ApplicationContext();
         
-        /// <summary>
-        /// Возвращает пользовалеля по его данным
-        /// </summary>
-        /// <param name="loginData">
-        /// Email и пароль пользователя
-        /// </param>
-        /// <returns>
-        /// Пользователя в виде объекта <c>User</c>
-        /// </returns>
+        
+        /// <inheritdoc cref="IUserRepository.Get(LoginData loginData)"/>
         public async Task<User?> Get(LoginData loginData)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email && u.Password == loginData.Password);
         }
         
-        /// <summary>
-        /// Добавляет нового пользователя
-        /// </summary>
-        /// <param name="loginData">
-        /// Email и пароль пользователя
-        /// </param>
+        /// <inheritdoc cref="IUserRepository.Add(LoginData loginData)"/>
         public async Task Add(LoginData loginData)
         {
             if (await _db.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email && u.Password == loginData.Email) == null)

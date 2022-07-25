@@ -22,6 +22,10 @@ namespace HotelWebApp.Controllers
         /// </summary>
         private IUserRepository _usersRepository;
 
+        /// <summary>
+        /// Конструктор контроллера, устанавливает класс,
+        /// реализующий интерфейс репозитория
+        /// </summary>
         public AuthenticationController()
         {
             this._usersRepository = new UsersRepository();
@@ -44,7 +48,7 @@ namespace HotelWebApp.Controllers
         /// статусный код или исключение
         /// </summary>
         /// <param name="loginData">
-        /// Email и пароль пользователя, полученные тела запроса
+        /// Email и пароль пользователя, полученные из тела запроса
         /// </param>
         /// <returns>
         /// Статусный код Ok(200), если пользователь
@@ -76,7 +80,7 @@ namespace HotelWebApp.Controllers
         /// статусный код
         /// </summary>
         /// <param name="loginData">
-        /// Email и пароль пользователя, полученные тела запроса
+        /// Email и пароль пользователя, полученные из тела запроса
         /// </param>
         /// <returns>
         /// Статусный код Ok(200), если пользователь

@@ -3,8 +3,15 @@ using Microsoft.AspNetCore.Diagnostics;
 
 namespace HotelWebApp;
 
+/// <summary>
+/// Обработчик исключений
+/// </summary>
 public static class ErrorHandler
 {
+    /// <summary>
+    /// Метод для обработки исключений и отправки статусных кодов
+    /// </summary>
+    /// <param name="context">Контекст Http запроса для отправки ответа</param>
     public static async Task Handle(HttpContext context)
     {
         var exceptionObject = context.Features.Get<IExceptionHandlerFeature>();
