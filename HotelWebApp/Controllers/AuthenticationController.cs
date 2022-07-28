@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Repositories;
+using HotelWebApp.Enums;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 
@@ -13,7 +14,8 @@ namespace HotelWebApp.Controllers
     /// точек для подключения, отключения и регистрации
     /// </summary>
     [ApiController]
-    [Route("auth")]
+    [Route("api/auth")]
+    [Produces("application/json")]
     public class AuthenticationController : ControllerBase
     {
         /// <summary>
@@ -36,6 +38,7 @@ namespace HotelWebApp.Controllers
         /// генерирует исключение
         /// </summary>
         /// <exception cref="AccessException"></exception>
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [HttpGet("accessdenied")]
         public async Task Deny()
         {
@@ -50,19 +53,20 @@ namespace HotelWebApp.Controllers
         /// <param name="loginData">
         /// Email и пароль пользователя, полученные из тела запроса
         /// </param>
-        /// <returns>
-        /// Статусный код Ok(200), если пользователь
-        /// успешно добавлен, или исключение <c>AuthenticationException</c>.
-        /// </returns>
-        /// <exception cref="AuthenticationException"></exception>
+        /// <response code="200">Успешная аутентификация пользователя</response>
+        /// <response code="400">Данные введены неверно</response>
+        /// <exception cref="AuthenticationException">Пользователь не найден</exception>
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Login([FromBody]LoginData loginData)
         {
             var user = await _usersRepository.Get(loginData);
 
             if (user == null) throw new AuthenticationException("Пользователь не найден");
 
-            var role = (Role)user.Role;
+            var role = user.Role;
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
@@ -82,14 +86,24 @@ namespace HotelWebApp.Controllers
         /// <param name="loginData">
         /// Email и пароль пользователя, полученные из тела запроса
         /// </param>
-        /// <returns>
-        /// Статусный код Ok(200), если пользователь
-        /// успешно добавлен
-        /// </returns>
+        /// <response code="200">Успешная регистрация пользователя</response>
+        /// <response code="400">Данные введены неверно</response>
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] LoginData loginData)
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Register([FromBody] RegisterData registerData)
         {
-            await _usersRepository.Add(loginData);
+            try
+            {
+                await _usersRepository.Add(registerData);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw new UserExistsException("Пользователь уже существует");
+            }
+            
             return Ok();
         }
         
@@ -98,10 +112,9 @@ namespace HotelWebApp.Controllers
         /// учетной записи пользователя
         /// возвращает статусный код
         /// </summary>
-        /// <returns>
-        /// Статусный код Ok(200)
-        /// </returns>
+        /// <response code="200">Успешный выход пользователя из учетной записи</response>
         [HttpPost("logout")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

@@ -1,9 +1,11 @@
-﻿namespace HotelWebApp.Repositories;
+﻿using HotelWebApp.Filters;
+
+namespace HotelWebApp.Repositories;
 
 /// <summary>
-/// Интерфейс для работы с репозиторием
+/// Интерфейс для работы с репозиторием комнат
 /// </summary>
-public interface IUserRepository : IDisposable
+public interface IUserRepository
 {
     /// <summary>
     /// Возвражает пользовалеля по его данным
@@ -22,5 +24,12 @@ public interface IUserRepository : IDisposable
     /// <param name="loginData">
     /// Email и пароль пользователя
     /// </param>
-    Task Add(LoginData loginData);
+    Task Add(RegisterData registerData);
+
+    /// <summary>
+    /// Возвращает список комнат с использованием фильтров и сортировки
+    /// </summary>
+    /// <param name="filter">Фильтр для поиска пользователей</param>
+    /// <returns>Список пользователей</returns>
+    Task<List<User>> GetAll(UserFilter filter);
 }

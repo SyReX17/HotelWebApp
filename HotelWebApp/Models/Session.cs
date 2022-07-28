@@ -1,4 +1,6 @@
-﻿namespace HotelWebApp
+﻿using HotelWebApp.Models;
+
+namespace HotelWebApp
 {
     public class Session
     {

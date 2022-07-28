@@ -6,8 +6,8 @@ builder.Services.AddControllers();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/login";
-        options.AccessDeniedPath = "/accessdenied";
+        options.LoginPath = "/api/auth/login";
+        options.AccessDeniedPath = "/api/auth/accessdenied";
     });
 builder.Services.AddAuthorization();
 
@@ -29,12 +29,13 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
     });
+    var context = new ApplicationContext();
+    ProjectInitializer.Initialize(context);
 }
+app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseRouting();
 
 app.MapControllers();
 

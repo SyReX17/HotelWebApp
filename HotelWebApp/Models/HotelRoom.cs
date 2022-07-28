@@ -1,4 +1,6 @@
-﻿namespace HotelWebApp
+﻿using HotelWebApp.Enums;
+
+namespace HotelWebApp.Models
 {
     /// <summary>
     /// Модель данных для комнат отеля
@@ -8,7 +10,7 @@
         /// <summary>
         /// Идентификатор комнаты
         /// </summary>
-        public int Id { get; set; }
+        public string Id { get; set; }
         
         /// <summary>
         /// Номер комнаты
@@ -18,7 +20,12 @@
         /// <summary>
         /// Статус состояния комнаты
         /// </summary>
-        public byte Status { get; set; }
+        public HotelRoomStatus? Status { get; set; }
+        
+        /// <summary>
+        /// Внешний ключ для типов комнат
+        /// </summary>
+        public int TypeId { get; set; }
         
         /// <summary>
         /// Тип комнаты
