@@ -37,8 +37,9 @@ namespace HotelWebApp.Controllers
         /// Конечная точка для отказа в доступе к ресурсу,
         /// генерирует исключение
         /// </summary>
+        /// <response code="403">Отсутсвует доступ к запрашиваемому ресурсу</response>
         /// <exception cref="AccessException"></exception>
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(403)]
         [HttpGet("accessdenied")]
         public async Task Deny()
         {
@@ -55,11 +56,12 @@ namespace HotelWebApp.Controllers
         /// </param>
         /// <response code="200">Успешная аутентификация пользователя</response>
         /// <response code="400">Данные введены неверно</response>
+        /// <response code="401">Пользователь не найден</response>
         /// <exception cref="AuthenticationException">Пользователь не найден</exception>
         [HttpPost("login")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(401)]
         public async Task<IActionResult> Login([FromBody]LoginData loginData)
         {
             var user = await _usersRepository.Get(loginData);
@@ -87,11 +89,10 @@ namespace HotelWebApp.Controllers
         /// Email и пароль пользователя, полученные из тела запроса
         /// </param>
         /// <response code="200">Успешная регистрация пользователя</response>
-        /// <response code="400">Данные введены неверно</response>
+        /// <response code="400">Данные введены некоректно</response>
         [HttpPost("register")]
-        [Consumes(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(400)]
         public async Task<IActionResult> Register([FromBody] RegisterData registerData)
         {
             try

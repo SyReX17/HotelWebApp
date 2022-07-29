@@ -7,6 +7,7 @@ namespace HotelWebApp.Controllers;
 
 [ApiController]
 [Route("api/admin")]
+[Authorize(Roles = "Admin")]
 [Produces("application/json")]
 public class AdminController : ControllerBase
 {
@@ -31,8 +32,10 @@ public class AdminController : ControllerBase
     /// </summary>
     /// <param name="filter">Фильтр для пользователей</param>
     /// <response code="200">Успешное получение всех пользователей</response>
+    /// <response code="400">Данные введены некоректно</response>
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(List<User>))]
+    [ProducesResponseType(400)]
     public async Task<IActionResult> GetUsers([FromQuery] UserFilter filter)
     {
         var users = await _usersRepository.GetAll(filter);

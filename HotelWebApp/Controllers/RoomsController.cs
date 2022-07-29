@@ -39,9 +39,11 @@ public class RoomsController : ControllerBase
     /// </summary>
     /// <param name="filter">Фильтр для комнат</param>
     /// <response code="200">Успешное получение комнат</response>
+    /// <response code="400">Данные введены некоректно</response> 
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(List<HotelRoom>))]
+    [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     public async Task<IActionResult> GetAllRooms([FromQuery] RoomFilter filter)
     {
@@ -57,6 +59,7 @@ public class RoomsController : ControllerBase
     /// <returns>
     /// Объект комнаты и статусный код Ок(200), или генерирует исключение
     /// <response code="200">Успешное получение комнаты</response>
+    /// <response code="400">Данные введены некоректно</response>
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     /// <exception cref="RoomSearchException">Комната не найдена</exception>
     [HttpGet("{id}")]
