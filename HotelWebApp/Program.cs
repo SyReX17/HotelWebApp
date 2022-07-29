@@ -29,8 +29,10 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
     });
+
+    IInitializer initializer = new ProjectInitializer();
     var context = new ApplicationContext();
-    ProjectInitializer.Initialize(context);
+    initializer.Initialize(context);
 }
 app.UseRouting();
 

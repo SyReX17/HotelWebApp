@@ -7,13 +7,13 @@ namespace HotelWebApp;
 /// <summary>
 /// Класс инициализатора БД
 /// </summary>
-public static class ProjectInitializer
+public class ProjectInitializer : IInitializer
 {
     /// <summary>
     /// Инициализация БД, создание, миграция, добавление начальных данных, при создании
     /// </summary>
     /// <param name="context">Контекст подключения к БД</param>
-    public static async void Initialize(ApplicationContext context)
+    public async void Initialize(ApplicationContext context)
     {
         await context.Database.EnsureCreatedAsync();
         
