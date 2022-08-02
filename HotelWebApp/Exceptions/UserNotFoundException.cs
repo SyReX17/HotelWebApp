@@ -1,7 +1,7 @@
 ﻿namespace HotelWebApp.Exceptions;
 
 /// <summary>
-/// Исключение вызываемое, если пользователь отсутсвует в БД
+/// Исключение вызываемое, если пользователь отсутсвует в БД, наследуется от RequestException
 /// </summary>
 public class UserNotFoundException : RequestException
 {

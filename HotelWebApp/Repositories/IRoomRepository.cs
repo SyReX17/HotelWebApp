@@ -15,5 +15,10 @@ public interface IRoomRepository
     /// <returns>Список комнат</returns>
     Task<List<HotelRoom>> GetAll(RoomFilter filter);
 
+    /// <summary>
+    /// Возвращает комнату по идентификатору
+    /// </summary>
+    /// <param name="id">Идентификатор комнаты</param>
+    /// <returns>Комната</returns>
     Task<HotelRoom> GetById(int id);
 }

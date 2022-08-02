@@ -3,15 +3,30 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebApp.MIddlewares;
 
+/// <summary>
+/// Класс midllware для обработки ошибок
+/// </summary>
 public class ErrorHandlerMiddleware
 {
+    /// <summary>
+    /// Ссыка на следущий middleware
+    /// </summary>
     private RequestDelegate next;
 
+    /// <summary>
+    /// Конструктор обработчика принимает ссылку на следущий middleware
+    /// </summary>
+    /// <param name="next">Ссылка на следуший middleware</param>
     public ErrorHandlerMiddleware(RequestDelegate next)
     {
         this.next = next;
     }
 
+    /// <summary>
+    /// Метод для отлова ошибок при помощи try/catch, принимает
+    /// контекст http запроса из предыдущего middleware
+    /// </summary>
+    /// <param name="context">Контекст http запроса</param>
     public async Task InvokeAsync(HttpContext context)
     {
         try

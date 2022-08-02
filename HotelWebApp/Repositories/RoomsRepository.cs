@@ -52,7 +52,7 @@ namespace HotelWebApp.Repositories
             return rooms;
         }
 
-        /// <inheritdoc cref="IRoomRepository.GetById(string Id)"/>
+        /// <inheritdoc cref="IRoomRepository.GetById(int Id)"/>
         public async Task<HotelRoom> GetById(int id)
         {
             var room = await _db.Rooms.Include(r => r.Type).FirstOrDefaultAsync(room => room.Id == id);

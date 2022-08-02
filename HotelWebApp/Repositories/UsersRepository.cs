@@ -79,14 +79,10 @@ namespace HotelWebApp.Repositories
             }
         }
 
+        /// <inheritdoc cref="IUserRepository.GetById(int id)"/>
         public async Task<User?> GetById(int id)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
-        }
-
-        public string FormatDate(DateTime date)
-        {
-            return date.ToShortDateString();
         }
     }
 }
