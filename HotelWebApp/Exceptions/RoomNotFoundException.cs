@@ -3,7 +3,7 @@
 /// <summary>
 /// Исключение вызываемое, если комната не найдена
 /// </summary>
-public class RoomSearchException : Exception
+public class RoomNotFoundException : RequestException
 {
-    public RoomSearchException(string message) : base(message) {}
+    public RoomNotFoundException(string message, int statusCode) : base(message, statusCode) {}
 }

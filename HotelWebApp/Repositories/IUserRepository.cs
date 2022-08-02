@@ -32,4 +32,11 @@ public interface IUserRepository
     /// <param name="filter">Фильтр для поиска пользователей</param>
     /// <returns>Список пользователей</returns>
     Task<List<User>> GetAll(UserFilter filter);
+
+    /// <summary>
+    /// Возвращает пользователя по id
+    /// </summary>
+    /// <param name="id">Идентификатор пользователя</param>
+    /// <returns>Пользователя в виде объекта <c>User</c></returns>
+    Task<User?> GetById(int id);
 }

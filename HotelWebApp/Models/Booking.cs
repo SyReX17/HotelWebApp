@@ -1,16 +1,17 @@
-﻿using HotelWebApp.Models;
+﻿using HotelWebApp.Enums;
+using HotelWebApp.Models;
 
 namespace HotelWebApp
 {
-    public class Session
+    public class Booking
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         
         public User? Resident { get; set; }
         
-        public HotelRoom? Room { get; set; }
+        public HotelRoomType? RoomType { get; set; }
         
-        public bool Confirm { get; set; }
+        public BookingStatus Status { get; set; }
         
         public DateTime? StartAt { get; set; }
         

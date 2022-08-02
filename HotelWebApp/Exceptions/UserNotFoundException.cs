@@ -3,7 +3,7 @@
 /// <summary>
 /// Исключение вызываемое, если пользователь отсутсвует в БД
 /// </summary>
-public class AuthenticationException : Exception
+public class UserNotFoundException : RequestException
 {
-    public AuthenticationException(string message) : base(message) {}
+    public UserNotFoundException(string message, int statusCode) : base(message, statusCode) {}
 }

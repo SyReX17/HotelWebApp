@@ -11,6 +11,11 @@
         Free,
         
         /// <summary>
+        /// комната забронирована
+        /// </summary>
+        Booking,
+        
+        /// <summary>
         /// Комната занята
         /// </summary>
         Occupied,

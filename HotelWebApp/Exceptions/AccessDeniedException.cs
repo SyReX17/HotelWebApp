@@ -3,7 +3,7 @@
 /// <summary>
 /// Исключение, вызываемое при ошибке доступа
 /// </summary>
-public class AccessException : Exception
+public class AccessDeniedException : RequestException
 {
-    public AccessException(string message) : base(message) {}
+    public AccessDeniedException(string message, int statusCode) : base(message, statusCode) {}
 }

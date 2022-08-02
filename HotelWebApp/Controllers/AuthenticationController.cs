@@ -43,7 +43,7 @@ namespace HotelWebApp.Controllers
         [HttpGet("accessdenied")]
         public async Task Deny()
         {
-            throw new AccessException("Доступ отсутствует");
+            throw new AccessDeniedException("Доступ отсутствует", 403);
         }
         
         /// <summary>
@@ -66,7 +66,7 @@ namespace HotelWebApp.Controllers
         {
             var user = await _usersRepository.Get(loginData);
 
-            if (user == null) throw new AuthenticationException("Пользователь не найден");
+            if (user == null) throw new UserNotFoundException("Пользователь не найден", 401);
 
             var role = user.Role;
             var claims = new List<Claim>
@@ -102,7 +102,7 @@ namespace HotelWebApp.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw new UserExistsException("Пользователь уже существует");
+                throw new UserExistsException("Пользователь уже существует", 400);
             }
             
             return Ok();

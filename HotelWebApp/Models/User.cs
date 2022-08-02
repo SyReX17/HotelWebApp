@@ -11,8 +11,7 @@ namespace HotelWebApp
         /// <summary>
         /// Идентификатор пользователя
         /// </summary>
-        [MaxLength(36)]
-        public string Id { get; set; }
+        public int Id { get; set; }
         
         /// <summary>
         /// Email пользователя

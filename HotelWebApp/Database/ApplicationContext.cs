@@ -27,8 +27,8 @@ public class ApplicationContext : DbContext
     /// <summary>
     /// Хранит набор данных типа <c>Session</c>
     /// </summary>
-    public DbSet<Session> Sessions { get; set; } = null!;
-    
+    public DbSet<Booking> Bookings { get; set; } = null!;
+
     /// <summary>
     /// Конструктор контекста, создает БД, если она не создана
     /// </summary>

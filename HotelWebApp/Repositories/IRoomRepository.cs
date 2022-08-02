@@ -15,5 +15,5 @@ public interface IRoomRepository
     /// <returns>Список комнат</returns>
     Task<List<HotelRoom>> GetAll(RoomFilter filter);
 
-    Task<HotelRoom> GetById(string id);
+    Task<HotelRoom> GetById(int id);
 }

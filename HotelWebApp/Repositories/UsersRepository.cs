@@ -11,7 +11,7 @@ namespace HotelWebApp.Repositories
     /// Класс репозитория для взаимодействия с БД,
     /// реализует интерфейс <c>IUserRepository</c>
     /// </summary>
-    public class UsersRepository : IUserRepository, IDisposable
+    public class UsersRepository : IUserRepository
     {
         /// <summary>
         /// Контекст подключения к БД
@@ -64,7 +64,6 @@ namespace HotelWebApp.Repositories
             {
                 User user = new User 
                 { 
-                    Id = Guid.NewGuid().ToString(),
                     FullName = registerData.FullName, 
                     Email = registerData.Email, 
                     Password = registerData.Password, 
@@ -76,45 +75,18 @@ namespace HotelWebApp.Repositories
             }
             else
             {
-                throw new UserExistsException("Такой пользователь уже существует");
+                throw new UserExistsException("Такой пользователь уже существует", 400);
             }
+        }
+
+        public async Task<User?> GetById(int id)
+        {
+            return await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public string FormatDate(DateTime date)
         {
             return date.ToShortDateString();
-        }
-
-        /// <summary>
-        /// Отслеживаем, был ли вызван Dispose.
-        /// </summary>
-        private bool disposed = false;
-
-        /// <summary>
-        /// Метод для очистки используемых ресурсов
-        /// </summary>
-        /// <param name="disposing"></param>
-        public virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _db.Dispose();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Реализация интерфейса IDisposable,
-        /// вызов освобождения ресурсов, сигнал GB
-        /// для предотвращения повторного
-        /// освобождения ресурсов
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

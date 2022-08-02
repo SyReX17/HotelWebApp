@@ -23,7 +23,6 @@ public class ProjectInitializer : IInitializer
 
         var admin = new User
         {
-            Id = Guid.NewGuid().ToString(),
             Email = "admin@mail.ru",
             Password = "12345",
             FullName = "Администратор",
@@ -48,20 +47,20 @@ public class ProjectInitializer : IInitializer
 
         var rooms = new List<HotelRoom>()
         {
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 101, Status = HotelRoomStatus.Free, Type = types[0]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 102, Status = HotelRoomStatus.Free, Type = types[0]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 103, Status = HotelRoomStatus.Free, Type = types[0]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 104, Status = HotelRoomStatus.Free, Type = types[0]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 105, Status = HotelRoomStatus.Free, Type = types[0]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 106, Status = HotelRoomStatus.Free, Type = types[0]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 107, Status = HotelRoomStatus.Free, Type = types[0]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 108, Status = HotelRoomStatus.Free, Type = types[0]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 201, Status = HotelRoomStatus.Free, Type = types[1]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 202, Status = HotelRoomStatus.Free, Type = types[1]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 203, Status = HotelRoomStatus.Free, Type = types[1]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 204, Status = HotelRoomStatus.Free, Type = types[1]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 301, Status = HotelRoomStatus.Free, Type = types[2]},
-            new HotelRoom { Id = Guid.NewGuid().ToString(), Number = 302, Status = HotelRoomStatus.Free, Type = types[2]}
+            new HotelRoom { Number = 101, Status = HotelRoomStatus.Free, Type = types[0]},
+            new HotelRoom { Number = 102, Status = HotelRoomStatus.Free, Type = types[0]},
+            new HotelRoom { Number = 103, Status = HotelRoomStatus.Free, Type = types[0]},
+            new HotelRoom { Number = 104, Status = HotelRoomStatus.Free, Type = types[0]},
+            new HotelRoom { Number = 105, Status = HotelRoomStatus.Free, Type = types[0]},
+            new HotelRoom { Number = 106, Status = HotelRoomStatus.Free, Type = types[0]},
+            new HotelRoom { Number = 107, Status = HotelRoomStatus.Free, Type = types[0]},
+            new HotelRoom { Number = 108, Status = HotelRoomStatus.Free, Type = types[0]},
+            new HotelRoom { Number = 201, Status = HotelRoomStatus.Free, Type = types[1]},
+            new HotelRoom { Number = 202, Status = HotelRoomStatus.Free, Type = types[1]},
+            new HotelRoom { Number = 203, Status = HotelRoomStatus.Free, Type = types[1]},
+            new HotelRoom { Number = 204, Status = HotelRoomStatus.Free, Type = types[1]},
+            new HotelRoom { Number = 301, Status = HotelRoomStatus.Free, Type = types[2]},
+            new HotelRoom { Number = 302, Status = HotelRoomStatus.Free, Type = types[2]}
         };
 
         await context.AddRangeAsync(rooms);

@@ -10,7 +10,7 @@ namespace HotelWebApp.Repositories
     /// Класс репозитория для взаимодействия с БД,
     /// реализует интерфейс <c>IRoomRepository</c>
     /// </summary>
-    public class RoomsRepository : IRoomRepository, IDisposable
+    public class RoomsRepository : IRoomRepository
     {
         /// <summary>
         /// Контекст подключения к БД
@@ -53,42 +53,10 @@ namespace HotelWebApp.Repositories
         }
 
         /// <inheritdoc cref="IRoomRepository.GetById(string Id)"/>
-        public async Task<HotelRoom> GetById(string id)
+        public async Task<HotelRoom> GetById(int id)
         {
             var room = await _db.Rooms.Include(r => r.Type).FirstOrDefaultAsync(room => room.Id == id);
             return room;
-        }
-
-        /// <summary>
-        /// Отслеживаем, был ли вызван Dispose.
-        /// </summary>
-        private bool disposed = false;
-
-        /// <summary>
-        /// Метод для очистки используемых ресурсов
-        /// </summary>
-        /// <param name="disposing"></param>
-        public virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    _db.Dispose();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Реализация интерфейса IDisposable,
-        /// вызов освобождения ресурсов, сигнал GB
-        /// для предотвращения повторного
-        /// освобождения ресурсов
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

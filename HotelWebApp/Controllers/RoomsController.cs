@@ -66,11 +66,11 @@ public class RoomsController : ControllerBase
     [ProducesResponseType(200, Type = typeof(HotelRoom))]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
-    public async Task<IActionResult> GetRoom(string id)
+    public async Task<IActionResult> GetRoom(int id)
     {
         var room = await _roomsRepository.GetById(id);
 
-        if (room == null) throw new RoomSearchException("Комната не найдена");
+        if (room == null) throw new RoomNotFoundException("Комната не найдена", 400);
 
         return Ok(room);
     }
