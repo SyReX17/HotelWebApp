@@ -1,5 +1,4 @@
 ﻿using HotelWebApp.Enums;
-using HotelWebApp.Models;
 
 namespace HotelWebApp
 {

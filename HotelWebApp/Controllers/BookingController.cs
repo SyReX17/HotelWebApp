@@ -1,12 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HotelWebApp.Enums;
+﻿using HotelWebApp.Enums;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Filters;
 using HotelWebApp.Models;
 using HotelWebApp.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 
 namespace HotelWebApp.Controllers;
 

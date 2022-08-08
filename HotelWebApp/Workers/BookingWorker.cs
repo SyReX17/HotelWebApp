@@ -1,6 +1,6 @@
 ﻿using HotelWebApp.Repositories;
 
-namespace HotelWebApp.Services;
+namespace HotelWebApp.Workers;
 
 public class BookingWorker : BackgroundService
 {

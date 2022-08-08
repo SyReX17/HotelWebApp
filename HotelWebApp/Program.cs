@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using HotelWebApp;
 using HotelWebApp.MIddlewares;
 using HotelWebApp.Repositories;
-using HotelWebApp.Services;
+using HotelWebApp.Workers;
 
 var builder = WebApplication.CreateBuilder();
 builder.Services.AddSingleton<ApplicationContext>();

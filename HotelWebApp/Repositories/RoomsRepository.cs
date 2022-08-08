@@ -1,5 +1,4 @@
-﻿using HotelWebApp.Enums;
-using HotelWebApp.Filters;
+﻿using HotelWebApp.Filters;
 using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Models;
 using HotelWebApp.Sorting;
