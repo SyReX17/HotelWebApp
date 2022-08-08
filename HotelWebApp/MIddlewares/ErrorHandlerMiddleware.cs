@@ -9,6 +9,10 @@ namespace HotelWebApp.MIddlewares;
 public class ErrorHandlerMiddleware
 {
     /// <summary>
+    /// Логгер для вывода внутренних ошибок сервера
+    /// </summary>
+    private ILogger<Program> _logger;
+    /// <summary>
     /// Ссыка на следущий middleware
     /// </summary>
     private RequestDelegate next;
@@ -45,6 +49,7 @@ public class ErrorHandlerMiddleware
         }
         catch (Exception e)
         {
+            Console.WriteLine(e.ToString());
             var problemDetails = new ProblemDetails();
             
             context.Response.Headers.ContentType = "application/json; charset=utf-8";

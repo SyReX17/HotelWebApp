@@ -39,4 +39,11 @@ public interface IUserRepository
     /// <param name="id">Идентификатор пользователя</param>
     /// <returns>Пользователя в виде объекта <c>User</c></returns>
     Task<User?> GetById(int id);
+
+    /// <summary>
+    /// Возвращает пользователя по email
+    /// </summary>
+    /// <param name="email">Email пользователя</param>
+    /// <returns>Пользователя в виде объекта <c>User</c></returns>
+    Task<int> GetByEmail(string email);
 }

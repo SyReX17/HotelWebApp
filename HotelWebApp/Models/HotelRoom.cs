@@ -23,11 +23,6 @@ namespace HotelWebApp.Models
         public HotelRoomStatus? Status { get; set; }
         
         /// <summary>
-        /// Внешний ключ для типов комнат
-        /// </summary>
-        public int TypeId { get; set; }
-        
-        /// <summary>
         /// Тип комнаты
         /// </summary>
         public HotelRoomType? Type { get; set; }

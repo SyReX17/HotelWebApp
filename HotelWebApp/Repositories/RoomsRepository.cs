@@ -15,7 +15,12 @@ namespace HotelWebApp.Repositories
         /// <summary>
         /// Контекст подключения к БД
         /// </summary>
-        private ApplicationContext _db = new ApplicationContext();
+        private ApplicationContext _db;
+
+        public RoomsRepository(ApplicationContext context)
+        {
+            _db = context;
+        }
 
         /// <inheritdoc cref="IRoomRepository.GetAll(UserFilter filter)"/>
         public async Task<List<HotelRoom>> GetAll(RoomFilter filter)

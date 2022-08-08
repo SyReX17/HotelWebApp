@@ -16,7 +16,12 @@ namespace HotelWebApp.Repositories
         /// <summary>
         /// Контекст подключения к БД
         /// </summary>
-        private ApplicationContext _db = new ApplicationContext();
+        private ApplicationContext _db;
+
+        public UsersRepository(ApplicationContext context)
+        {
+            _db = context;
+        }
 
         /// <inheritdoc cref="IUserRepository.GetAll(UserFilter filter)"/>
         public async Task<List<User>> GetAll(UserFilter filter)
@@ -60,7 +65,7 @@ namespace HotelWebApp.Repositories
         /// <inheritdoc cref="IUserRepository.Add(LoginData loginData)"/>
         public async Task Add(RegisterData registerData)
         {
-            if (await _db.Users.FirstOrDefaultAsync(u => u.Email == registerData.Email && u.Password == registerData.Password) == null)
+            if (await _db.Users.FirstOrDefaultAsync(u => u.Email == registerData.Email) == null)
             {
                 User user = new User 
                 { 
@@ -75,7 +80,7 @@ namespace HotelWebApp.Repositories
             }
             else
             {
-                throw new UserExistsException("Такой пользователь уже существует", 400);
+                throw new UserExistsException();
             }
         }
 
@@ -83,6 +88,12 @@ namespace HotelWebApp.Repositories
         public async Task<User?> GetById(int id)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        public async Task<int> GetByEmail(string email)
+        {
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return user.Id;
         }
     }
 }

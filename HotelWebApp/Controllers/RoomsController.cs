@@ -3,7 +3,6 @@ using HotelWebApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using HotelWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
-using HotelWebApp.Enums;
 using HotelWebApp.Filters;
 
 namespace HotelWebApp.Controllers;
@@ -28,9 +27,9 @@ public class RoomsController : ControllerBase
     /// Конструктор контроллера, устанавливает класс,
     /// реализующий интерфейс репозитория
     /// </summary>
-    public RoomsController()
+    public RoomsController(IRoomRepository roomRepository)
     {
-        this._roomsRepository = new RoomsRepository();
+        this._roomsRepository = roomRepository;
     }
     
     /// <summary>
@@ -56,7 +55,6 @@ public class RoomsController : ControllerBase
     /// Конечная точка для получения комнат по идентификатору
     /// </summary>
     /// <param name="id">Идентификатор комнаты</param>
-    /// <returns>
     /// Объект комнаты и статусный код Ок(200), или генерирует исключение
     /// <response code="200">Успешное получение комнаты</response>
     /// <response code="400">Данные введены некоректно</response>
@@ -70,7 +68,7 @@ public class RoomsController : ControllerBase
     {
         var room = await _roomsRepository.GetById(id);
 
-        if (room == null) throw new RoomNotFoundException("Комната не найдена", 400);
+        if (room == null) throw new RoomNotFoundException();
 
         return Ok(room);
     }

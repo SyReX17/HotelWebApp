@@ -21,9 +21,9 @@ public class AdminController : ControllerBase
     /// Конструктор контроллера, устанавливает класс,
     /// реализующий интерфейс репозитория
     /// </summary>
-    public AdminController()
+    public AdminController(IUserRepository userRepository)
     {
-        this._usersRepository = new UsersRepository();
+        this._usersRepository = userRepository;
     }
     
     /// <summary>

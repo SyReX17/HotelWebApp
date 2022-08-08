@@ -5,5 +5,5 @@
 /// </summary>
 public class UserExistsException : RequestException
 {
-    public UserExistsException(string message, int statusCode) : base(message, statusCode) {}
+    public UserExistsException() : base("Такой пользователь уже существует", 400) {}
 }

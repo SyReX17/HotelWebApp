@@ -30,6 +30,11 @@ public class ApplicationContext : DbContext
     public DbSet<Booking> Bookings { get; set; } = null!;
 
     /// <summary>
+    /// Хранит набор счетов на оплату
+    /// </summary>
+    public DbSet<Invoice> Invoices { get; set; } = null!;
+
+    /// <summary>
     /// Конструктор контекста, создает БД, если она не создана
     /// </summary>
     public ApplicationContext()

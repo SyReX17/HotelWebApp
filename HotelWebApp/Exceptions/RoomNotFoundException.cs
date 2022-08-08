@@ -5,5 +5,5 @@
 /// </summary>
 public class RoomNotFoundException : RequestException
 {
-    public RoomNotFoundException(string message, int statusCode) : base(message, statusCode) {}
+    public RoomNotFoundException() : base("Комната не найдена", 400) {}
 }

@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Repositories;
-using HotelWebApp.Enums;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Mime;
 
 namespace HotelWebApp.Controllers
 {
@@ -28,9 +26,9 @@ namespace HotelWebApp.Controllers
         /// Конструктор контроллера, устанавливает класс,
         /// реализующий интерфейс репозитория
         /// </summary>
-        public AuthenticationController()
+        public AuthenticationController(IUserRepository userRepository)
         {
-            this._usersRepository = new UsersRepository();
+            this._usersRepository = userRepository;
         }
         
         /// <summary>
@@ -43,7 +41,7 @@ namespace HotelWebApp.Controllers
         [HttpGet("accessdenied")]
         public async Task Deny()
         {
-            throw new AccessDeniedException("Доступ отсутствует", 403);
+            throw new AccessDeniedException(  );
         }
         
         /// <summary>
@@ -66,7 +64,7 @@ namespace HotelWebApp.Controllers
         {
             var user = await _usersRepository.Get(loginData);
 
-            if (user == null) throw new UserNotFoundException("Пользователь не найден", 401);
+            if (user == null) throw new UserNotFoundException();
 
             var role = user.Role;
             var claims = new List<Claim>
@@ -102,7 +100,7 @@ namespace HotelWebApp.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw new UserExistsException("Пользователь уже существует", 400);
+                throw new UserExistsException();
             }
             
             return Ok();

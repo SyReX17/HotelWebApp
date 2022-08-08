@@ -63,7 +63,7 @@ public class ProjectInitializer : IInitializer
             new HotelRoom { Number = 302, Status = HotelRoomStatus.Free, Type = types[2]}
         };
 
-        await context.AddRangeAsync(rooms);
+        await context.Rooms.AddRangeAsync(rooms);
         await context.SaveChangesAsync();
     }
 }

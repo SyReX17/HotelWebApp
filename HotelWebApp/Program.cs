@@ -1,8 +1,15 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using HotelWebApp;
 using HotelWebApp.MIddlewares;
+using HotelWebApp.Repositories;
+using HotelWebApp.Services;
 
 var builder = WebApplication.CreateBuilder();
+builder.Services.AddSingleton<ApplicationContext>();
+builder.Services.AddSingleton<IUserRepository, UsersRepository>();
+builder.Services.AddSingleton<IRoomRepository, RoomsRepository>();
+builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
+builder.Services.AddHostedService<BookingWorker>();
 builder.Services.AddControllers();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthorization();

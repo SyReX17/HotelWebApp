@@ -5,5 +5,5 @@
 /// </summary>
 public class AccessDeniedException : RequestException
 {
-    public AccessDeniedException(string message, int statusCode) : base(message, statusCode) {}
+    public AccessDeniedException() : base("Доступ отсутсвует", 403) {}
 }
