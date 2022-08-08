@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using HotelWebApp.Models;
 using HotelWebApp;
+using HotelWebApp.Enums;
+
 
 /// <summary>
 /// Контекст подключения к БД
@@ -24,8 +27,8 @@ public class ApplicationContext : DbContext
     /// <summary>
     /// Хранит набор данных типа <c>Session</c>
     /// </summary>
-    public DbSet<Session> Sessions { get; set; } = null!;
-    
+    public DbSet<Booking> Bookings { get; set; } = null!;
+
     /// <summary>
     /// Конструктор контекста, создает БД, если она не создана
     /// </summary>
@@ -49,8 +52,6 @@ public class ApplicationContext : DbContext
     /// <param name="modelBuilder">Параметр для установления начальных значений в БД</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>().HasData(
-                new User { Id = Guid.NewGuid().ToString(), Email = "admin@mail.ru", Password = "12345", Role = 0 }
-        );
+        
     }
 }

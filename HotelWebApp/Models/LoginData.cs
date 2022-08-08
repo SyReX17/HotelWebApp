@@ -21,6 +21,7 @@ namespace HotelWebApp
         /// </summary>
         [JsonPropertyName("password")]
         [Required]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = null!;
     }
 }
