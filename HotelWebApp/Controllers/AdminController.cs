@@ -15,7 +15,7 @@ public class AdminController : ControllerBase
     /// Реализация репозитория для работы с БД
     /// через интерфейс <c>IUserRepository</c>
     /// </summary>
-    private IUserRepository _usersRepository;
+    private readonly IUserRepository _usersRepository;
 
     /// <summary>
     /// Конструктор контроллера, устанавливает класс,
@@ -23,7 +23,7 @@ public class AdminController : ControllerBase
     /// </summary>
     public AdminController(IUserRepository userRepository)
     {
-        this._usersRepository = userRepository;
+        _usersRepository = userRepository;
     }
     
     /// <summary>

@@ -19,17 +19,17 @@ public class BookingController : ControllerBase
     /// <summary>
     /// Реализация репозитория для работы с комнатами
     /// </summary>
-    private IRoomRepository _roomRepository;
+    private readonly IRoomRepository _roomRepository;
 
     /// <summary>
     /// Реализация репозитория для работы с пользователями
     /// </summary>
-    private IUserRepository _userRepository;
+    private readonly IUserRepository _userRepository;
 
     /// <summary>
     /// Реализация репозитория для работы с бронями
     /// </summary>
-    private IBookingRepository _bookingRepository;
+    private readonly IBookingRepository _bookingRepository;
 
     /// <summary>
     /// Конструктор контроллера, устанавливает классы
@@ -37,9 +37,9 @@ public class BookingController : ControllerBase
     /// </summary>
     public BookingController(IRoomRepository roomRepository, IUserRepository userRepository, IBookingRepository bookingRepository)
     {
-        this._roomRepository = roomRepository;
-        this._userRepository = userRepository;
-        this._bookingRepository = bookingRepository;
+        _roomRepository = roomRepository;
+        _userRepository = userRepository;
+        _bookingRepository = bookingRepository;
     }
     
     /// <summary>
@@ -190,7 +190,7 @@ public class BookingController : ControllerBase
     {
         var userId = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
         await _bookingRepository.ExtendBooking(userId, extendData.BookingId, extendData.newFinishAt);
-        
+
         return Ok();
     }
 

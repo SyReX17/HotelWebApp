@@ -12,8 +12,6 @@ public class StatusData
     /// </summary>
     public int BookingId { get; set; }
     
-    /// <summary>
-    /// Статус бронирования
-    /// </summary>
+    /// <inheritdoc cref="BookingStatus"/>
     public BookingStatus NewStatus { get; set; }
 }

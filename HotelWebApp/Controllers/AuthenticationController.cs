@@ -20,7 +20,7 @@ namespace HotelWebApp.Controllers
         /// Реализация репозитория для работы с БД
         /// через интерфейс <c>IUserRepository</c>
         /// </summary>
-        private IUserRepository _usersRepository;
+        private readonly IUserRepository _usersRepository;
 
         /// <summary>
         /// Конструктор контроллера, устанавливает класс,
@@ -28,7 +28,7 @@ namespace HotelWebApp.Controllers
         /// </summary>
         public AuthenticationController(IUserRepository userRepository)
         {
-            this._usersRepository = userRepository;
+            _usersRepository = userRepository;
         }
         
         /// <summary>

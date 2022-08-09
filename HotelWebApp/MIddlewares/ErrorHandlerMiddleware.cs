@@ -8,6 +8,7 @@ namespace HotelWebApp.MIddlewares;
 /// </summary>
 public class ErrorHandlerMiddleware
 {
+    private readonly ILoggerFactory _loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
     /// <summary>
     /// Логгер для вывода внутренних ошибок сервера
     /// </summary>
@@ -24,6 +25,7 @@ public class ErrorHandlerMiddleware
     public ErrorHandlerMiddleware(RequestDelegate next)
     {
         this.next = next;
+        this._logger = _loggerFactory.CreateLogger<Program>();
     }
 
     /// <summary>
@@ -49,7 +51,7 @@ public class ErrorHandlerMiddleware
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            _logger.LogError(e.Message);
             var problemDetails = new ProblemDetails();
             
             context.Response.Headers.ContentType = "application/json; charset=utf-8";

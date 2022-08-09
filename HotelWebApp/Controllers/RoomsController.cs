@@ -21,7 +21,7 @@ public class RoomsController : ControllerBase
     /// Реализация репозитория для работы с БД
     /// через интерфейс <c>IRoomRepository</c>
     /// </summary>
-    private IRoomRepository _roomsRepository;
+    private readonly IRoomRepository _roomsRepository;
 
     /// <summary>
     /// Конструктор контроллера, устанавливает класс,
@@ -29,7 +29,7 @@ public class RoomsController : ControllerBase
     /// </summary>
     public RoomsController(IRoomRepository roomRepository)
     {
-        this._roomsRepository = roomRepository;
+        _roomsRepository = roomRepository;
     }
     
     /// <summary>

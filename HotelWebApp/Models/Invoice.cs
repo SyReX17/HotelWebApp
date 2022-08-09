@@ -12,9 +12,7 @@ public class Invoice
     /// </summary>
     public int Id { get; set; }
     
-    /// <summary>
-    /// Статус оплаты
-    /// </summary>
+    /// <inheritdoc cref="InvoiceStatus"/>
     public InvoiceStatus Status { get; set; }
     
     /// <summary>

@@ -22,9 +22,7 @@ namespace HotelWebApp
         /// </summary>
         public int RoomId { get; set; }
         
-        /// <summary>
-        /// Статус брони
-        /// </summary>
+        /// <inheritdoc cref="BookingStatus"/>
         public BookingStatus Status { get; set; }
         
         /// <summary>

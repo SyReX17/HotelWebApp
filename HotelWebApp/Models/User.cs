@@ -35,9 +35,7 @@ namespace HotelWebApp
         /// </summary>
         public DateTime RegisteredAt { get; set; }
         
-        /// <summary>
-        /// Роль пользователя
-        /// </summary>
+        /// <inheritdoc cref="Role"/>
         public Role Role { get; set; }
     }
 }
