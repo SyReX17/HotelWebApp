@@ -154,9 +154,9 @@ public class BookingRepository : IBookingRepository
     }
 
     /// <inheritdoc cref="IBookingRepository.EvictClient(int userId)"/>
-    public async Task EvictClient(int userId)
+    public async Task EvictClient(int bookingId)
     {
-        var booking = await _db.Bookings.FirstOrDefaultAsync(b => b.ResidentId == userId && b.StartAt <= DateTime.Now && b.FinishAt >= DateTime.Now);
+        var booking = await _db.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId && b.StartAt <= DateTime.Now && b.FinishAt >= DateTime.Now);
         
         if (booking != null)
         {

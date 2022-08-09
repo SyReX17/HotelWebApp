@@ -13,7 +13,7 @@ namespace HotelWebApp.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/rooms")]
-[Authorize(Roles = "Admin, User")]
+[Authorize]
 [Produces("application/json")]
 public class RoomsController : ControllerBase
 {

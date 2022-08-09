@@ -1,4 +1,5 @@
 ﻿using HotelWebApp.Filters;
+using HotelWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using HotelWebApp.Repositories;
@@ -6,10 +7,10 @@ using HotelWebApp.Repositories;
 namespace HotelWebApp.Controllers;
 
 [ApiController]
-[Route("api/admin")]
+[Route("api/admin/users")]
 [Authorize(Roles = "Admin")]
 [Produces("application/json")]
-public class AdminController : ControllerBase
+public class AdminUsersController : ControllerBase
 {
     /// <summary>
     /// Реализация репозитория для работы с БД
@@ -21,7 +22,7 @@ public class AdminController : ControllerBase
     /// Конструктор контроллера, устанавливает класс,
     /// реализующий интерфейс репозитория
     /// </summary>
-    public AdminController(IUserRepository userRepository)
+    public AdminUsersController(IUserRepository userRepository)
     {
         _usersRepository = userRepository;
     }
@@ -34,12 +35,25 @@ public class AdminController : ControllerBase
     /// <response code="200">Успешное получение всех пользователей</response>
     /// <response code="400">Данные введены некоректно</response>
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(List<User>))]
+    [ProducesResponseType(200, Type = typeof(List<UserDTO>))]
     [ProducesResponseType(400)]
     public async Task<IActionResult> GetUsers([FromQuery] UserFilter filter)
     {
         var users = await _usersRepository.GetAll(filter);
 
-        return Ok(users);
+        return Ok(users.Select(u => ToUserDTO(u)).ToList());
+    }
+    
+ 
+    private UserDTO ToUserDTO(User user)
+    {
+        return new UserDTO
+        {
+            Id = user.Id,
+            Email = user.Email,
+            FullName = user.FullName,
+            RegisteredAt = user.RegisteredAt,
+            Role = user.Role
+        };
     }
 }

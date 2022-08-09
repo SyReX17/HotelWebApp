@@ -12,15 +12,10 @@ namespace HotelWebApp.Controllers;
 /// Контроллер для работы с бронированием комнат
 /// </summary>
 [ApiController]
-[Route("api/booking")]
+[Route("api/bookings")]
 [Produces("application/json")]
-public class BookingController : ControllerBase
+public class BookingsController : ControllerBase
 {
-    /// <summary>
-    /// Реализация репозитория для работы с комнатами
-    /// </summary>
-    private readonly IRoomRepository _roomRepository;
-
     /// <summary>
     /// Реализация репозитория для работы с пользователями
     /// </summary>
@@ -35,9 +30,8 @@ public class BookingController : ControllerBase
     /// Конструктор контроллера, устанавливает классы
     /// реализующие интерфейсы репозиториев
     /// </summary>
-    public BookingController(IRoomRepository roomRepository, IUserRepository userRepository, IBookingRepository bookingRepository)
+    public BookingsController(IUserRepository userRepository, IBookingRepository bookingRepository)
     {
-        _roomRepository = roomRepository;
         _userRepository = userRepository;
         _bookingRepository = bookingRepository;
     }
@@ -55,7 +49,7 @@ public class BookingController : ControllerBase
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
-    public async Task<IActionResult> BookRoom([FromBody] UserBookingData bookingData)
+    public async Task<IActionResult> AddBooking([FromBody] UserBookingData bookingData)
     {
         if (bookingData.StartAt >= bookingData.FinishAt || bookingData.StartAt < DateTime.Now)
         {
@@ -77,43 +71,6 @@ public class BookingController : ControllerBase
     }
 
     /// <summary>
-    /// Конечная точка для подтверждения бронирования администратором
-    /// </summary>
-    /// <param name="bookingId">Идентификатор бронирования</param>
-    /// <response code="200">Успешное подтверждения брони</response>
-    /// <response code="403">Отсутствие доступа к ресурсу</response>
-    [HttpPut("{bookingId}")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(200)]
-    [ProducesResponseType(403)]
-    public async Task<IActionResult> ConfirmBooking(int bookingId)
-    {
-        var statusData = new StatusData
-        {
-            BookingId = bookingId,
-            NewStatus = BookingStatus.Confirm
-        };
-        await _bookingRepository.UpdateStatus(statusData);
-        return Ok();
-    }
-
-    /// <summary>
-    /// Конечная точка для получения всех броней
-    /// </summary>
-    /// <response code="200">Успешное получение всех броней</response>
-    /// <response code="403">Отсутствие доступа к ресурсу</response>
-    [HttpGet]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(200, Type = typeof(List<Booking>))]
-    [ProducesResponseType(403)]
-    public async Task<IActionResult> GetAllBookings()
-    {
-        var bookings = await _bookingRepository.GetAll();
-
-        return Ok(bookings);
-    }
-
-    /// <summary>
     /// Конечная точка для получения свободных комнат
     /// </summary>
     /// <param name="filter">Фильтр для получения свободных комнат</param>
@@ -123,7 +80,6 @@ public class BookingController : ControllerBase
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpGet]
     [Authorize]
-    [Route("free")]
     [ProducesResponseType(200, Type = typeof(List<HotelRoom>))]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
@@ -139,41 +95,6 @@ public class BookingController : ControllerBase
     }
 
     /// <summary>
-    /// Конечная точка для получения счетов на оплату
-    /// </summary>
-    /// <response code="200">Успешное получение счетов на оплату</response>
-    /// <response code="403">Отсутствие доступа к ресурсу</response>
-    [HttpGet]
-    [Authorize(Roles = "Admin")]
-    [Route("invoices")]
-    [ProducesResponseType(200, Type = typeof(List<Invoice>))]
-    [ProducesResponseType(403)]
-    public async Task<IActionResult> GetInvoices()
-    {
-        var invoices = await _bookingRepository.GetInvoices();
-        return Ok(invoices);
-    }
-
-    /// <summary>
-    /// Конечная точка для подтверждения оплаты
-    /// </summary>
-    /// <param name="invoiceId">Идентификатор счета на оплату</param>
-    /// <response code="200">Успешное подтверждение оплаты</response>
-    /// <response code="400">Данные введены некоректно</response>
-    /// <response code="403">Отсутствие доступа к ресурсу</response>
-    [HttpPut]
-    [Authorize(Roles = "Admin")]
-    [Route("invoices/{invoiceId}")]
-    [ProducesResponseType(200)]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(403)]
-    public async Task<IActionResult> ConfirmInvoice(int invoiceId)
-    {
-        await _bookingRepository.ConfirmInvoice(invoiceId);
-        return Ok();
-    }
-
-    /// <summary>
     /// Конечная точка для продления бронирования
     /// </summary>
     /// <param name="extendData">Данные для прдления бронирования</param>
@@ -182,14 +103,14 @@ public class BookingController : ControllerBase
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpPut]
     [Authorize]
-    [Route("extend")]
+    [Route("{bookingId}/extend")]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
-    public async Task<IActionResult> ExtendBooking([FromQuery] ExtendData extendData)
+    public async Task<IActionResult> ExtendBooking(int bookingId, [FromBody] DateTime newFinishAt)
     {
         var userId = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
-        await _bookingRepository.ExtendBooking(userId, extendData.BookingId, extendData.newFinishAt);
+        await _bookingRepository.ExtendBooking(userId, bookingId, newFinishAt);
 
         return Ok();
     }
@@ -201,35 +122,16 @@ public class BookingController : ControllerBase
     /// <response code="200">Успешная отмена бронирования</response>
     /// <response code="400">Данные введены некоректно</response>
     /// <response code="403">Отсутствие доступа к ресурсу</response>
-    [HttpDelete]
+    [HttpDelete("{bookingId}")]
     [Authorize]
     [ProducesResponseType(200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
-    public async Task<IActionResult> CancelBooking([FromQuery] int bookingId)
+    public async Task<IActionResult> CancelBooking(int bookingId)
     {
         var userId = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
         await _bookingRepository.RemoveBooking(userId, bookingId);
 
-        return Ok();
-    }
-
-    /// <summary>
-    /// Конечная точка для выселения клиента
-    /// </summary>
-    /// <param name="userId">Идентификатор клиента</param>
-    /// <response code="200">Успешное выселение клиента</response>
-    /// <response code="400">Данные введены некоректно</response>
-    /// <response code="403">Отсутствие доступа к ресурсу</response>
-    [HttpPut]
-    [Authorize(Roles = "Admin")]
-    [Route("evict/{userId}")]
-    [ProducesResponseType(200)]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(403)]
-    public async Task<IActionResult> EvictClient(int userId)
-    {
-        await _bookingRepository.EvictClient(userId);
         return Ok();
     }
 }

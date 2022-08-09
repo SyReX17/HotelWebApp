@@ -1,4 +1,5 @@
 ﻿using HotelWebApp.Filters;
+using HotelWebApp.Models;
 
 namespace HotelWebApp.Repositories;
 

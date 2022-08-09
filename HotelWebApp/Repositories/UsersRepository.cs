@@ -2,6 +2,7 @@
 using HotelWebApp.Enums;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Filters;
+using HotelWebApp.Models;
 using HotelWebApp.Sorting;
 
 namespace HotelWebApp.Repositories
@@ -89,6 +90,7 @@ namespace HotelWebApp.Repositories
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
+        /// <inheritdoc cref="IUserRepository.GetByEmail(string email)"/>
         public async Task<int> GetByEmail(string email)
         {
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
