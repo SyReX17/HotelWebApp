@@ -5,12 +5,16 @@ using HotelWebApp.Repositories;
 using HotelWebApp.Workers;
 
 var builder = WebApplication.CreateBuilder();
-builder.Services.AddTransient<ApplicationContext>();
-builder.Services.AddTransient<IUserRepository, UsersRepository>();
-builder.Services.AddTransient<IRoomRepository, RoomsRepository>();
-builder.Services.AddTransient<IBookingRepository, BookingRepository>();
-builder.Services.AddHostedService<BookingWorker>();
+
+builder.Services.AddDbContext<ApplicationContext>();
+builder.Services.AddScoped<IUserRepository, UsersRepository>();
+builder.Services.AddScoped<IRoomRepository, RoomsRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IMethodCallService, MethodCallService>();
+builder.Services.AddHostedService<TimerBackgroundService>();
+
 builder.Services.AddControllers();
+
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
 builder.Services.AddAuthorization();
 
