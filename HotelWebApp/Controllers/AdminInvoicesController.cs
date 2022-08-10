@@ -49,6 +49,6 @@ public class AdminInvoicesController : ControllerBase
     public async Task<IActionResult> ConfirmInvoice(int invoiceId)
     {
         await _bookingRepository.ConfirmInvoice(invoiceId);
-        return Ok();
+        return NoContent();
     }
 }

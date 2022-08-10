@@ -1,8 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Security.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebApp.Controllers
@@ -30,7 +33,9 @@ namespace HotelWebApp.Controllers
         {
             _usersRepository = userRepository;
         }
-        
+
+        private PasswordHasher<User> _hasher = new PasswordHasher<User>();
+          
         /// <summary>
         /// Конечная точка для отказа в доступе к ресурсу,
         /// генерирует исключение
@@ -75,7 +80,7 @@ namespace HotelWebApp.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             await HttpContext.SignInAsync(claimsPrincipal);
-            return Ok();
+            return NoContent();
         }
         
         /// <summary>
@@ -93,17 +98,9 @@ namespace HotelWebApp.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> Register([FromBody] RegisterData registerData)
         {
-            try
-            {
-                await _usersRepository.Add(registerData);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw new UserExistsException();
-            }
+            await _usersRepository.Add(registerData);
             
-            return Ok();
+            return NoContent();
         }
         
         /// <summary>
@@ -117,7 +114,7 @@ namespace HotelWebApp.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Ok();
+            return NoContent();
         }
     }
 }

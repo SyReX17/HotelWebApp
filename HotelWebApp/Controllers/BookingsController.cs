@@ -112,7 +112,7 @@ public class BookingsController : ControllerBase
         var userId = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
         await _bookingRepository.ExtendBooking(userId, bookingId, newFinishAt);
 
-        return Ok();
+        return NoContent();
     }
 
     /// <summary>
@@ -132,6 +132,6 @@ public class BookingsController : ControllerBase
         var userId = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
         await _bookingRepository.RemoveBooking(userId, bookingId);
 
-        return Ok();
+        return NoContent();
     }
 }

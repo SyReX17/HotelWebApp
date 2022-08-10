@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BC = BCrypt.Net.BCrypt;
+using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Enums;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Filters;
-using HotelWebApp.Models;
 using HotelWebApp.Sorting;
 
 namespace HotelWebApp.Repositories
@@ -59,7 +59,7 @@ namespace HotelWebApp.Repositories
         /// <inheritdoc cref="IUserRepository.Get(LoginData loginData)"/>
         public async Task<User?> Get(LoginData loginData)
         {
-            return await _db.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email && u.Password == loginData.Password);
+            return await _db.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email && Verify(loginData.Password, u.Password));
         }
         
         /// <inheritdoc cref="IUserRepository.Add(LoginData loginData)"/>
@@ -71,7 +71,7 @@ namespace HotelWebApp.Repositories
                 { 
                     FullName = registerData.FullName, 
                     Email = registerData.Email, 
-                    Password = registerData.Password, 
+                    Password = BC.HashPassword(registerData.Password), 
                     RegisteredAt = DateTime.Today,
                     Role = Role.User 
                 };
@@ -95,6 +95,11 @@ namespace HotelWebApp.Repositories
         {
             var user = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
             return user.Id;
+        }
+
+        public bool Verify(string password, string hash)
+        {
+            return BC.Verify(password, hash);
         }
     }
 }

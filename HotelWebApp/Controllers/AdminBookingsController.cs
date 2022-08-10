@@ -51,7 +51,7 @@ public class AdminBookingsController : ControllerBase
             NewStatus = BookingStatus.Confirm
         };
         await _bookingRepository.UpdateStatus(statusData);
-        return Ok();
+        return NoContent();
     }
     
     /// <summary>
@@ -69,6 +69,6 @@ public class AdminBookingsController : ControllerBase
     public async Task<IActionResult> EvictClient(int bookingId)
     {
         await _bookingRepository.EvictClient(bookingId);
-        return Ok();
+        return NoContent();
     }
 }
