@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BC = BCrypt.Net.BCrypt;
+using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Enums;
 using HotelWebApp.Models;
 
@@ -24,7 +25,7 @@ public class ProjectInitializer : IInitializer
         var admin = new User
         {
             Email = "admin@mail.ru",
-            Password = "12345",
+            Password = BC.HashPassword("12345"),
             FullName = "Администратор",
             RegisteredAt = DateTime.Today,
             Role = (byte)Role.Admin

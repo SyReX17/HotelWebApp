@@ -55,10 +55,12 @@ public class BookingsController : ControllerBase
         {
             throw new DatesValidationException();
         }
-        
+
+        var user = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
+            
         var booking = new Booking
         {
-            ResidentId = await _userRepository.GetByEmail(HttpContext.User.Identity.Name),
+            ResidentId = user.Id,
             RoomId = bookingData.RoomId,
             Status = BookingStatus.Awaiting,
             StartAt = bookingData.StartAt,
@@ -109,8 +111,8 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> ExtendBooking(int bookingId, [FromBody] DateTime newFinishAt)
     {
-        var userId = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
-        await _bookingRepository.ExtendBooking(userId, bookingId, newFinishAt);
+        var user = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
+        await _bookingRepository.ExtendBooking(user.Id, bookingId, newFinishAt);
 
         return NoContent();
     }
@@ -129,8 +131,8 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> CancelBooking(int bookingId)
     {
-        var userId = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
-        await _bookingRepository.RemoveBooking(userId, bookingId);
+        var user = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
+        await _bookingRepository.RemoveBooking(user.Id, bookingId);
 
         return NoContent();
     }

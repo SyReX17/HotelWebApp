@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using BC = BCrypt.Net.BCrypt;
 
 namespace HotelWebApp.Controllers
 {
@@ -67,9 +67,11 @@ namespace HotelWebApp.Controllers
         [ProducesResponseType(401)]
         public async Task<IActionResult> Login([FromBody]LoginData loginData)
         {
-            var user = await _usersRepository.Get(loginData);
-
+            var user = await _usersRepository.GetByEmail(loginData.Email);
+            
             if (user == null) throw new UserNotFoundException();
+
+            if (!BC.Verify(loginData.Password, user.Password)) throw new PasswordValidationException();
 
             var role = user.Role;
             var claims = new List<Claim>
@@ -98,6 +100,7 @@ namespace HotelWebApp.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> Register([FromBody] RegisterData registerData)
         {
+            registerData.Password = BC.HashPassword(registerData.Password);
             await _usersRepository.Add(registerData);
             
             return NoContent();

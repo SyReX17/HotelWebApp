@@ -9,17 +9,6 @@ namespace HotelWebApp.Repositories;
 public interface IUserRepository
 {
     /// <summary>
-    /// Возвражает пользовалеля по его данным
-    /// </summary>
-    /// <param name="loginData">
-    /// Email и пароль пользователя
-    /// </param>
-    /// <returns>
-    /// Пользователя в виде объекта <c>User</c>
-    /// </returns>
-    Task<User?> Get(LoginData loginData);
-    
-    /// <summary>
     /// Добавляет нового пользователя
     /// </summary>
     /// <param name="loginData">
@@ -46,5 +35,5 @@ public interface IUserRepository
     /// </summary>
     /// <param name="email">Email пользователя</param>
     /// <returns>Пользователя в виде объекта <c>User</c></returns>
-    Task<int> GetByEmail(string email);
+    Task<User?> GetByEmail(string email);
 }

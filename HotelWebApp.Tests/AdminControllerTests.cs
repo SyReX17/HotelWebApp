@@ -1,66 +1,49 @@
 using HotelWebApp.Controllers;
 using HotelWebApp.Enums;
 using HotelWebApp.Filters;
+using HotelWebApp.Models;
 using HotelWebApp.Repositories;
+using HotelWebApp.Tests.Mocks;
+using Microsoft.AspNetCore.Mvc;
 using Moq;
 
 namespace HotelWebApp.Tests;
 
 public class AdminControllerTests
 {
-    private Mock<IUserRepository> _mockRepo;
+    private IUserRepository _mockRepo;
 
-    private List<User> _users = new List<User>
-    {
-        new User
-        {
-            Email = "admin@mail.ru",
-            Password = "12345",
-            FullName = "Администратор",
-            RegisteredAt = DateTime.Today,
-            Role = (byte)Role.Admin
-        },
-        new User
-        {
-            Email = "user1@mail.ru",
-            Password = "12345",
-            FullName = "Пользователь1",
-            RegisteredAt = DateTime.Today.AddHours(1),
-            Role = (byte)Role.Admin
-        },
-        new User
-        {
-            Email = "user2@mail.ru",
-            Password = "12345",
-            FullName = "Пользователь2",
-            RegisteredAt = DateTime.Today.AddHours(2),
-            Role = (byte)Role.Admin
-        },
-    };
-    
+    private List<UserDTO> _testList;
     [SetUp]
     public void Setup()
     {
-        _mockRepo = new Mock<IUserRepository>();
+        _mockRepo = new UsersRepositoryMock();
+        _testList = new List<UserDTO>
+        {
+            new UserDTO { Id = 1, Email = "admin@mail.ru", FullName = "Администратор", RegisteredAt = DateTime.Today, Role = (byte)Role.Admin },
+            new UserDTO { Id = 2, Email = "user1@mail.ru", FullName = "Пользователь1", RegisteredAt = DateTime.Today.AddHours(1), Role = (byte)Role.Admin },
+            new UserDTO { Id = 3, Email = "user2@mail.ru", FullName = "Пользователь2", RegisteredAt = DateTime.Today.AddHours(2), Role = (byte)Role.Admin  }
+        };
     }
 
     [Test]
-    public async Task GetUsersTest()
+    public async Task GetAllUsersTest()
     {
         var filter = new UserFilter();
-        //_mockRepo.Setup(repo => repo.GetAll(filter)).ReturnsAsync();
 
-        var controller = new AdminUsersController(_mockRepo.Object);
+        var controller = new AdminUsersController(_mockRepo);
 
-        var result = await controller.GetUsers(filter);
-        
-        
-        
-        Assert.Pass();
-    }
+        var result = await controller.GetUsers(filter) as OkObjectResult;
 
-    public List<User> GetAll()
-    {
-        return _users;
+        var listResult = result.Value as List<UserDTO>;
+
+        foreach (var item in listResult)
+        {
+            Console.WriteLine(item.Id);
+        }
+
+        Assert.NotNull(result);
+        Assert.AreEqual(200, result.StatusCode);
+        Assert.IsTrue(_testList.SequenceEqual(listResult));
     }
 }

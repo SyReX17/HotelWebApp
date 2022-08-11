@@ -22,7 +22,7 @@ namespace HotelWebApp
         /// <summary>
         /// Пароль пользователя
         /// </summary>
-        [MaxLength(50)]
+        [MaxLength(100)]
         public string Password { get; set; }
         
         /// <summary>
