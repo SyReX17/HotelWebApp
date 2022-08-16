@@ -24,18 +24,16 @@ namespace HotelWebApp.Repositories
         /// <inheritdoc cref="IRoomRepository.GetAll(UserFilter filter)"/>
         public async Task<List<HotelRoom>> GetAll(RoomFilter filter)
         {
-            IQueryable<HotelRoom> query = _db.Rooms;
+            IQueryable<HotelRoom> query = _db.Rooms.Include(r => r.Type);
 
             if (filter.Status.HasValue)
             {
-                query = query.Include(r => r.Type)
-                    .Where(r => r.Status == filter.Status);
+                query = query.Where(r => r.Status == filter.Status);
             }
             
             if (filter.Type.HasValue)
             {
-                query = query.Include(r => r.Type)
-                    .Where(r => r.Type.Id == (byte)filter.Type);
+                query = query.Where(r => r.Type.Id == (byte)filter.Type);
             }
 
             if (filter.SortBy.HasValue && filter.SortOrder.HasValue)

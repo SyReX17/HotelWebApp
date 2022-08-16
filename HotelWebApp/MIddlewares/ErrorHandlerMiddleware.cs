@@ -12,10 +12,12 @@ public class ErrorHandlerMiddleware
     /// Фабрика для создания логгера
     /// </summary>
     private readonly ILoggerFactory _loggerFactory;
+    
     /// <summary>
     /// Логгер для вывода внутренних ошибок сервера
     /// </summary>
     private ILogger<Program> _logger;
+    
     /// <summary>
     /// Ссыка на следущий middleware
     /// </summary>
@@ -28,7 +30,7 @@ public class ErrorHandlerMiddleware
     /// <param name="next">Ссылка на следуший middleware</param>
     public ErrorHandlerMiddleware(RequestDelegate next)
     {
-        next = next;
+        this.next = next;
         _loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
         _logger = _loggerFactory.CreateLogger<Program>();
     }
