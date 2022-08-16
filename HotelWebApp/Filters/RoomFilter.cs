@@ -25,5 +25,5 @@ public class RoomFilter
     /// <summary>
     /// Направление сортировки
     /// </summary>
-    public SortOrder SortOrder { get; set; }
+    public SortOrder? SortOrder { get; set; }
 }

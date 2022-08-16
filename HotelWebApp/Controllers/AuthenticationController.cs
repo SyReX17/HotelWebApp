@@ -57,12 +57,12 @@ namespace HotelWebApp.Controllers
         /// <param name="loginData">
         /// Email и пароль пользователя, полученные из тела запроса
         /// </param>
-        /// <response code="200">Успешная аутентификация пользователя</response>
+        /// <response code="204">Успешная аутентификация пользователя</response>
         /// <response code="400">Данные введены неверно</response>
         /// <response code="401">Пользователь не найден</response>
         /// <exception cref="AuthenticationException">Пользователь не найден</exception>
         [HttpPost("login")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(401)]
         public async Task<IActionResult> Login([FromBody]LoginData loginData)
@@ -72,12 +72,11 @@ namespace HotelWebApp.Controllers
             if (user == null) throw new UserNotFoundException();
 
             if (!BC.Verify(loginData.Password, user.Password)) throw new PasswordValidationException();
-
-            var role = user.Role;
+            
             var claims = new List<Claim>
             {
                 new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, role.ToString())
+                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
             };
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
@@ -93,10 +92,10 @@ namespace HotelWebApp.Controllers
         /// <param name="loginData">
         /// Email и пароль пользователя, полученные из тела запроса
         /// </param>
-        /// <response code="200">Успешная регистрация пользователя</response>
+        /// <response code="204">Успешная регистрация пользователя</response>
         /// <response code="400">Данные введены некоректно</response>
         [HttpPost("register")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public async Task<IActionResult> Register([FromBody] RegisterData registerData)
         {
@@ -111,9 +110,9 @@ namespace HotelWebApp.Controllers
         /// учетной записи пользователя
         /// возвращает статусный код
         /// </summary>
-        /// <response code="200">Успешный выход пользователя из учетной записи</response>
+        /// <response code="204">Успешный выход пользователя из учетной записи</response>
         [HttpPost("logout")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(204)]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

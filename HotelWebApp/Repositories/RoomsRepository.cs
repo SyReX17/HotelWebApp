@@ -1,7 +1,7 @@
-﻿using HotelWebApp.Filters;
+﻿using HotelWebApp.Enums;
+using HotelWebApp.Filters;
 using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Models;
-using HotelWebApp.Sorting;
 
 namespace HotelWebApp.Repositories
 {
@@ -24,36 +24,39 @@ namespace HotelWebApp.Repositories
         /// <inheritdoc cref="IRoomRepository.GetAll(UserFilter filter)"/>
         public async Task<List<HotelRoom>> GetAll(RoomFilter filter)
         {
-            List<HotelRoom> rooms;
+            IQueryable<HotelRoom> query = _db.Rooms;
 
-            if (filter.Status.HasValue && filter.Type.HasValue)
+            if (filter.Status.HasValue)
             {
-                rooms = await _db.Rooms.Include(r => r.Type)
-                    .Where(r => r.Status == filter.Status && r.Type.Id == (byte)filter.Type)
-                    .ToListAsync();
+                query = query.Include(r => r.Type)
+                    .Where(r => r.Status == filter.Status);
             }
-            else if (filter.Status.HasValue)
+            
+            if (filter.Type.HasValue)
             {
-                rooms = await _db.Rooms.Include(r => r.Type)
-                    .Where(r => r.Status == filter.Status).ToListAsync();
-            }
-            else if (filter.Type.HasValue)
-            {
-                rooms = await _db.Rooms.Include(r => r.Type)
-                    .Where(r => r.Type.Id == (byte)filter.Type).ToListAsync();
-            }
-            else
-            {
-                rooms = await _db.Rooms.Include(r => r.Type).ToListAsync();
+                query = query.Include(r => r.Type)
+                    .Where(r => r.Type.Id == (byte)filter.Type);
             }
 
-            if (filter.SortBy.HasValue)
+            if (filter.SortBy.HasValue && filter.SortOrder.HasValue)
             {
-                ISorter<HotelRoom> sorter = new RoomSorter();
-                return sorter.Sort(rooms, (byte)filter.SortBy, filter.SortOrder).ToList();  
+                switch (filter.SortBy)
+                {
+                    case RoomsSortBy.Number:
+                        query = (filter.SortOrder == SortOrder.Desc) 
+                            ? query.OrderByDescending(r => r.Number) 
+                            : query.OrderBy(r => r.Number);
+                        break;
+            
+                    case RoomsSortBy.Price:
+                        query = (filter.SortOrder == SortOrder.Desc) 
+                            ? query.OrderByDescending(r => r.Type.Price) 
+                            : query.OrderBy(r => r.Type.Price);
+                        break;
+                }
             }
-
-            return rooms;
+            
+            return await query.ToListAsync();
         }
 
         /// <inheritdoc cref="IRoomRepository.GetById(int Id)"/>

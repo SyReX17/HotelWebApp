@@ -1,4 +1,5 @@
 ﻿using HotelWebApp.Filters;
+using HotelWebApp.Mappers;
 using HotelWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,9 @@ using HotelWebApp.Repositories;
 
 namespace HotelWebApp.Controllers;
 
+/// <summary>
+/// Класс контроллера для работы администратора с пользователями
+/// </summary>
 [ApiController]
 [Route("api/admin/users")]
 [Authorize(Roles = "Admin")]
@@ -41,19 +45,6 @@ public class AdminUsersController : ControllerBase
     {
         var users = await _usersRepository.GetAll(filter);
 
-        return Ok(users.Select(u => ToUserDTO(u)).ToList());
-    }
-    
- 
-    private UserDTO ToUserDTO(User user)
-    {
-        return new UserDTO
-        {
-            Id = user.Id,
-            Email = user.Email,
-            FullName = user.FullName,
-            RegisteredAt = user.RegisteredAt,
-            Role = user.Role
-        };
+        return Ok(users.Select(u => Mapper.ToUserDTO(u)).ToList());
     }
 }

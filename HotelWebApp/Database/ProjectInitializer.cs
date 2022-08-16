@@ -28,7 +28,7 @@ public class ProjectInitializer : IInitializer
             Password = BC.HashPassword("12345"),
             FullName = "Администратор",
             RegisteredAt = DateTime.Today,
-            Role = (byte)Role.Admin
+            Role = Role.Admin
         };
         
         await context.Users.AddAsync(admin);

@@ -41,12 +41,12 @@ public class BookingsController : ControllerBase
     /// </summary>
     /// <param name="bookingData">Данные о новой брони полученные из тела запроса</param>
     /// <exception cref="DatesValidationException">Даты введены неверно</exception>
-    /// <response code="200">Успешное добавление брони</response>
+    /// <response code="204">Успешное добавление брони</response>
     /// <response code="400">Данные введены некоректно</response>
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpPost]
     [Authorize]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     public async Task<IActionResult> AddBooking([FromBody] UserBookingData bookingData)
@@ -69,7 +69,7 @@ public class BookingsController : ControllerBase
 
         await _bookingRepository.Add(booking);
 
-        return Ok();
+        return NoContent();
     }
 
     /// <summary>
@@ -100,13 +100,13 @@ public class BookingsController : ControllerBase
     /// Конечная точка для продления бронирования
     /// </summary>
     /// <param name="extendData">Данные для прдления бронирования</param>
-    /// <response code="200">Успешное продление бронирования</response>
+    /// <response code="204">Успешное продление бронирования</response>
     /// <response code="400">Данные введены некоректно</response>
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpPut]
     [Authorize]
     [Route("{bookingId}/extend")]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     public async Task<IActionResult> ExtendBooking(int bookingId, [FromBody] DateTime newFinishAt)
@@ -121,12 +121,12 @@ public class BookingsController : ControllerBase
     /// Конечная точка для отмены бронирования
     /// </summary>
     /// <param name="bookingId">Идентификатор бронирования</param>
-    /// <response code="200">Успешная отмена бронирования</response>
+    /// <response code="204">Успешная отмена бронирования</response>
     /// <response code="400">Данные введены некоректно</response>
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpDelete("{bookingId}")]
     [Authorize]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     public async Task<IActionResult> CancelBooking(int bookingId)

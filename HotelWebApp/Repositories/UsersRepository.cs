@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Enums;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Filters;
-using HotelWebApp.Sorting;
 
 namespace HotelWebApp.Repositories
 {
@@ -25,34 +25,37 @@ namespace HotelWebApp.Repositories
         /// <inheritdoc cref="IUserRepository.GetAll(UserFilter filter)"/>
         public async Task<List<User>> GetAll(UserFilter filter)
         {
-            List<User> users;
-
-            if (!String.IsNullOrEmpty(filter.FullName) && filter.Date.HasValue)
+            IQueryable<User> query = _db.Users;
+            
+            if (!String.IsNullOrEmpty(filter.FullName))
             {
-                users = await _db.Users.Where(u =>
-                    u.FullName.ToLower().Contains(filter.FullName.ToLower()) && 
-                    DateTime.Compare(u.RegisteredAt, filter.Date.GetValueOrDefault()) == 0).ToListAsync();
+                query = query.Where(u => u.FullName.ToLower().Contains(filter.FullName.ToLower()));
             }
-            else if (!String.IsNullOrEmpty(filter.FullName))
+            
+            if (filter.Date.HasValue)
             {
-                users = await _db.Users.Where(u => u.FullName.ToLower().Contains(filter.FullName.ToLower())).ToListAsync();
-            }
-            else if (filter.Date.HasValue)
-            {
-                users = await _db.Users.Where(u => DateTime.Compare(u.RegisteredAt, filter.Date.GetValueOrDefault()) == 0).ToListAsync();
-            }
-            else
-            {
-                users =  await _db.Users.ToListAsync();
+                query = query.Where(u => DateTime.Compare(u.RegisteredAt, filter.Date.GetValueOrDefault()) == 0);
             }
 
-            if (filter.SortBy.HasValue)
+            if (filter.SortBy.HasValue && filter.SortOrder.HasValue)
             {
-                ISorter<User> sorter = new UserSorter();
-                return sorter.Sort(users, (byte)filter.SortBy, filter.SortOrder).ToList();
-            }
+                switch (filter.SortBy)
+                {
+                    case UserSortBy.Fullname:
+                        query = (filter.SortOrder == SortOrder.Desc)
+                            ? query.OrderByDescending(u => u.FullName)
+                            : query.OrderBy(u => u.FullName);
+                        break;
 
-            return users;
+                    case UserSortBy.Date:
+                        query = (filter.SortOrder == SortOrder.Desc)
+                            ? query.OrderByDescending(u => u.RegisteredAt)
+                            : query.OrderBy(u => u.RegisteredAt);
+                        break;
+                }
+            }
+            
+            return await query.ToListAsync();
         }
         
         /// <inheritdoc cref="IUserRepository.Add(LoginData loginData)"/>

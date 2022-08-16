@@ -8,10 +8,10 @@ public enum SortOrder : byte
     /// <summary>
     /// Прямой порядок
     /// </summary>
-    Direct,
+    Asc,
     
     /// <summary>
     /// Обратный порядок
     /// </summary>
-    Reverse
+    Desc
 }

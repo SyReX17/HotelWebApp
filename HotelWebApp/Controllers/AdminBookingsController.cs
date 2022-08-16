@@ -6,14 +6,25 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebApp.Controllers;
 
+/// <summary>
+/// Класс контроллера для работы администратора с бронями
+/// </summary>
 [ApiController]
 [Route("api/admin/bookings")]
 [Authorize(Roles = "Admin")]
 [Produces("application/json")]
 public class AdminBookingsController : ControllerBase
 {
+    /// <summary>
+    /// Реализация репозитрия для работы с бронямм
+    /// </summary>
     private readonly IBookingRepository _bookingRepository;
 
+    /// <summary>
+    /// Конструктор контроллера, устанавливающий класс,
+    /// реализующий интрефейс репозитория
+    /// </summary>
+    /// <param name="bookingRepository"></param>
     public AdminBookingsController(IBookingRepository bookingRepository)
     {
         _bookingRepository = bookingRepository;
@@ -38,10 +49,10 @@ public class AdminBookingsController : ControllerBase
     /// Конечная точка для подтверждения бронирования администратором
     /// </summary>
     /// <param name="bookingId">Идентификатор бронирования</param>
-    /// <response code="200">Успешное подтверждения брони</response>
+    /// <response code="204">Успешное подтверждения брони</response>
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpPut("{bookingId}")]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(403)]
     public async Task<IActionResult> ConfirmBooking(int bookingId)
     {
@@ -58,12 +69,12 @@ public class AdminBookingsController : ControllerBase
     /// Конечная точка для выселения клиента
     /// </summary>
     /// <param name="userId">Идентификатор клиента</param>
-    /// <response code="200">Успешное выселение клиента</response>
+    /// <response code="204">Успешное выселение клиента</response>
     /// <response code="400">Данные введены некоректно</response>
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpPut]
     [Route("{userId}/evict")]
-    [ProducesResponseType(200)]
+    [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     public async Task<IActionResult> EvictClient(int bookingId)
