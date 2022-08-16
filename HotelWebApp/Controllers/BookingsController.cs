@@ -46,7 +46,7 @@ public class BookingsController : ControllerBase
     /// <response code="403">Отсутствие доступа к ресурсу</response>
     [HttpPost]
     [Authorize]
-    [ProducesResponseType(204)]
+    [ProducesResponseType(201, Type = typeof(Booking))]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     public async Task<IActionResult> AddBooking([FromBody] UserBookingData bookingData)
@@ -69,7 +69,7 @@ public class BookingsController : ControllerBase
 
         await _bookingRepository.Add(booking);
 
-        return NoContent();
+        return CreatedAtAction(nameof(AddBooking), booking);
     }
 
     /// <summary>

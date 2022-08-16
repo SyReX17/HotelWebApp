@@ -80,7 +80,9 @@ namespace HotelWebApp.Controllers
             };
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            
             await HttpContext.SignInAsync(claimsPrincipal);
+            
             return NoContent();
         }
         
