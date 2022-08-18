@@ -9,19 +9,23 @@ namespace HotelWebApp.Repositories
     /// Класс репозитория для взаимодействия с БД,
     /// реализует интерфейс <c>IRoomRepository</c>
     /// </summary>
-    public class RoomsRepository : IRoomRepository
+    public class RoomsRepository : IRoomsRepository
     {
         /// <summary>
         /// Контекст подключения к БД
         /// </summary>
         private ApplicationContext _db;
 
+        /// <summary>
+        /// Конструктор, принимает контекст подключения к БД
+        /// </summary>
+        /// <param name="context">Контекст подключения к БД</param>
         public RoomsRepository(ApplicationContext context)
         {
             _db = context;
         }
 
-        /// <inheritdoc cref="IRoomRepository.GetAll(UserFilter filter)"/>
+        /// <inheritdoc cref="IRoomsRepository.GetAll(UserFilter filter)"/>
         public async Task<List<HotelRoom>> GetAll(RoomFilter filter)
         {
             IQueryable<HotelRoom> query = _db.Rooms.Include(r => r.Type);
@@ -57,11 +61,19 @@ namespace HotelWebApp.Repositories
             return await query.ToListAsync();
         }
 
-        /// <inheritdoc cref="IRoomRepository.GetById(int Id)"/>
-        public async Task<HotelRoom> GetById(int id)
+        /// <inheritdoc cref="IRoomsRepository.GetById(int Id)"/>
+        public async Task<HotelRoom?> GetById(int id)
         {
-            var room = await _db.Rooms.Include(r => r.Type).FirstOrDefaultAsync(room => room.Id == id);
-            return room;
+            return await _db.Rooms.Include(r => r.Type).FirstOrDefaultAsync(room => room.Id == id);;
+        }
+        
+        /// <inheritdoc cref="IRoomsRepository.GetFreeRooms(BookingFilter filter)"/>
+        public async Task<List<HotelRoom>> GetFreeRooms(BookingFilter filter)
+        {
+            return await _db.Rooms.Include(r => r.Type).Where(r =>  !(_db.Bookings
+                .Where(b => (filter.StartAt >= b.StartAt && filter.StartAt <= b.FinishAt) || (filter.FinishAt >= b.StartAt && 
+                    filter.FinishAt <= b.FinishAt) || (filter.StartAt <= b.StartAt && filter.FinishAt >= b.FinishAt))
+                .Select(b => b.RoomId).ToList().Contains(r.Id)) && r.Type.Id == (int)filter.Type).ToListAsync();
         }
     }
 }

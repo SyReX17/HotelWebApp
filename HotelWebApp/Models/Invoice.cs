@@ -39,4 +39,12 @@ public class Invoice
     /// Стоимость проживания
     /// </summary>
     public decimal Price { get; set; }
+
+    /// <summary>
+    /// Подтверждение счета на оплату
+    /// </summary>
+    public void Confirm()
+    {
+        Status = InvoiceStatus.Confirm;
+    }
 }

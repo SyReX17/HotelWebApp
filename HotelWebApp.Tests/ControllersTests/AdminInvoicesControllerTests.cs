@@ -55,7 +55,7 @@ public class AdminInvoicesControllerTests
     [Test]
     public async Task GetInvoicesTests()
     {
-        var mock = new Mock<IBookingRepository>();
+        var mock = new Mock<IBookingsRepository>();
         mock.Setup(repo => repo.GetInvoices()).ReturnsAsync(_testData);
 
         var controller = new AdminInvoicesController(mock.Object);
@@ -76,7 +76,7 @@ public class AdminInvoicesControllerTests
     [Test]
     public async Task ConfirmInvoiceTests()
     {
-        var mock = new Mock<IBookingRepository>();
+        var mock = new Mock<IBookingsRepository>();
         mock.Setup(repo => repo.ConfirmInvoice(1));
 
         var controller = new AdminInvoicesController(mock.Object);

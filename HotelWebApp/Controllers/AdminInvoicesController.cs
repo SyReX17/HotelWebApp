@@ -1,5 +1,5 @@
-﻿using HotelWebApp.Models;
-using HotelWebApp.Repositories;
+﻿using HotelWebApp.Interfaces.Services;
+using HotelWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,18 +15,18 @@ namespace HotelWebApp.Controllers;
 public class AdminInvoicesController : ControllerBase
 {
     /// <summary>
-    /// Реализация репозитория для работы с бронями
+    /// Реализация сервиса для работы с счетами на оплату
     /// </summary>
-    private readonly IBookingRepository _bookingRepository;
+    private readonly IInvoicesService _invoicesService;
 
     /// <summary>
     /// Конструктор контроллера, устанавливающий класс,
     /// реализующий интерфейс репозитория
     /// </summary>
-    /// <param name="bookingRepository"></param>
-    public AdminInvoicesController(IBookingRepository bookingRepository)
+    /// <param name="invoicesService">Сервис для работы с счетами на оплату</param>
+    public AdminInvoicesController(IInvoicesService invoicesService)
     {
-        _bookingRepository = bookingRepository;
+        _invoicesService = invoicesService;
     }
     
     /// <summary>
@@ -40,7 +40,7 @@ public class AdminInvoicesController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> GetInvoices()
     {
-        var invoices = await _bookingRepository.GetInvoices();
+        var invoices = await _invoicesService.GetInvoices();
         return Ok(invoices);
     }
     
@@ -59,7 +59,7 @@ public class AdminInvoicesController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> ConfirmInvoice(int invoiceId)
     {
-        await _bookingRepository.ConfirmInvoice(invoiceId);
+        await _invoicesService.ConfirmInvoice(invoiceId);
         return NoContent();
     }
 }

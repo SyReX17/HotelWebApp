@@ -34,5 +34,28 @@ namespace HotelWebApp
         /// Дата окончания проживания
         /// </summary>
         public DateTime? FinishAt { get; set; }
+
+        /// <summary>
+        /// Подтверждение брони
+        /// </summary>
+        public void Confirm()
+        {
+            Status = BookingStatus.Confirm;
+        }
+
+        /// <summary>
+        /// Остановка проживания
+        /// </summary>
+        public void Stop()
+        {
+            FinishAt = DateTime.Today.AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute);
+        }
+        
+        public decimal GetPrice(decimal basePrice)
+        {
+            var diffTime = FinishAt.Value.Subtract(StartAt.Value);
+
+            return Convert.ToDecimal(diffTime.TotalMinutes) * (basePrice / 60);
+        }
     }
 }

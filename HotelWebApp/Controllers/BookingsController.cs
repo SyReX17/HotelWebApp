@@ -1,8 +1,6 @@
-﻿using HotelWebApp.Enums;
-using HotelWebApp.Exceptions;
-using HotelWebApp.Filters;
+﻿using HotelWebApp.Exceptions;
+using HotelWebApp.Interfaces.Services;
 using HotelWebApp.Models;
-using HotelWebApp.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,23 +15,25 @@ namespace HotelWebApp.Controllers;
 public class BookingsController : ControllerBase
 {
     /// <summary>
-    /// Реализация репозитория для работы с пользователями
+    /// Интерфейс сервиса для работы с бронями
     /// </summary>
-    private readonly IUserRepository _userRepository;
+    private readonly IBookingsService _bookingsService;
 
     /// <summary>
-    /// Реализация репозитория для работы с бронями
+    /// Интерфейсс сервиса для работы с пользователями
     /// </summary>
-    private readonly IBookingRepository _bookingRepository;
+    private readonly IUsersService _usersService;
 
     /// <summary>
     /// Конструктор контроллера, устанавливает классы
-    /// реализующие интерфейсы репозиториев
+    /// реализующие интерфейсы сервисов
     /// </summary>
-    public BookingsController(IUserRepository userRepository, IBookingRepository bookingRepository)
+    /// <param name="bookingsService">Сервис для работы с бронями</param>
+    /// <param name="usersService">Сервис для работы с пользователями</param>
+    public BookingsController(IBookingsService bookingsService, IUsersService usersService)
     {
-        _userRepository = userRepository;
-        _bookingRepository = bookingRepository;
+        _bookingsService = bookingsService;
+        _usersService = usersService;
     }
     
     /// <summary>
@@ -51,49 +51,11 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> AddBooking([FromBody] UserBookingData bookingData)
     {
-        if (bookingData.StartAt >= bookingData.FinishAt || bookingData.StartAt < DateTime.Now)
-        {
-            throw new DatesValidationException();
-        }
-
-        var user = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
+        var user = await _usersService.GetByEmail(HttpContext.User.Identity.Name);
             
-        var booking = new Booking
-        {
-            ResidentId = user.Id,
-            RoomId = bookingData.RoomId,
-            Status = BookingStatus.Awaiting,
-            StartAt = bookingData.StartAt,
-            FinishAt = bookingData.FinishAt
-        };
-
-        await _bookingRepository.Add(booking);
+        var booking = await _bookingsService.Add(bookingData, user.Id);
 
         return CreatedAtAction(nameof(AddBooking), booking);
-    }
-
-    /// <summary>
-    /// Конечная точка для получения свободных комнат
-    /// </summary>
-    /// <param name="filter">Фильтр для получения свободных комнат</param>
-    /// <exception cref="DatesValidationException">Даты введены неверно</exception>
-    /// <response code="200">Успешное получение свободных комнат</response>
-    /// <response code="400">Данные введены некоректно</response>
-    /// <response code="403">Отсутствие доступа к ресурсу</response>
-    [HttpGet]
-    [Authorize]
-    [ProducesResponseType(200, Type = typeof(List<HotelRoom>))]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(403)]
-    public async Task<IActionResult> GetFreeRooms([FromQuery] BookingFilter filter)
-    {
-        if (filter.StartAt >= filter.FinishAt || filter.StartAt < DateTime.Now)
-        {
-            throw new DatesValidationException();
-        }
-        
-        var freeRooms = await _bookingRepository.GetFreeRooms(filter);
-        return Ok(freeRooms);
     }
 
     /// <summary>
@@ -109,10 +71,10 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(204)]
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
-    public async Task<IActionResult> ExtendBooking(int bookingId, [FromBody] DateTime newFinishAt)
+    public async Task<IActionResult> ExtendBooking(int bookingId, [FromBody] NewFinishDate date)
     {
-        var user = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
-        await _bookingRepository.ExtendBooking(user.Id, bookingId, newFinishAt);
+        var user = await _usersService.GetByEmail(HttpContext.User.Identity.Name);
+        await _bookingsService.ExtendBooking(user.Id, bookingId, date.FinishAt);
 
         return NoContent();
     }
@@ -131,8 +93,8 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> CancelBooking(int bookingId)
     {
-        var user = await _userRepository.GetByEmail(HttpContext.User.Identity.Name);
-        await _bookingRepository.RemoveBooking(user.Id, bookingId);
+        var user = await _usersService.GetByEmail(HttpContext.User.Identity.Name);
+        await _bookingsService.CancelBooking(user.Id, bookingId);
 
         return NoContent();
     }

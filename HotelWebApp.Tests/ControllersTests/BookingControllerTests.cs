@@ -70,8 +70,8 @@ public class BookingControllerTests
         };
 
         
-        var bookingsRepositoryMock = new Mock<IBookingRepository>();
-        var usersRepositoryMock = new Mock<IUserRepository>();
+        var bookingsRepositoryMock = new Mock<IBookingsRepository>();
+        var usersRepositoryMock = new Mock<IUsersRepository>();
         usersRepositoryMock.Setup(repo => repo.GetByEmail(_testUser.Email)).ReturnsAsync(_testUser);
         bookingsRepositoryMock.Setup(repo => repo.Add(testBooking));
 
@@ -99,8 +99,8 @@ public class BookingControllerTests
             StartAt = DateTime.Now.AddMinutes(5),
             FinishAt = DateTime.Now.AddMinutes(10)
         };
-        var bookingsRepositoryMock = new Mock<IBookingRepository>();
-        var usersRepositoryMock = new Mock<IUserRepository>();
+        var bookingsRepositoryMock = new Mock<IBookingsRepository>();
+        var usersRepositoryMock = new Mock<IUsersRepository>();
         bookingsRepositoryMock.Setup(repo => repo.GetFreeRooms(testFilter)).ReturnsAsync(_testRooms);
 
         var controller = new BookingsController(usersRepositoryMock.Object, bookingsRepositoryMock.Object);

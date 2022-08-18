@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Enums;
-using HotelWebApp.Exceptions;
 using HotelWebApp.Filters;
 
 namespace HotelWebApp.Repositories
@@ -10,19 +8,23 @@ namespace HotelWebApp.Repositories
     /// Класс репозитория для взаимодействия с БД,
     /// реализует интерфейс <c>IUserRepository</c>
     /// </summary>
-    public class UsersRepository : IUserRepository
+    public class UsersRepository : IUsersRepository
     {
         /// <summary>
         /// Контекст подключения к БД
         /// </summary>
         private ApplicationContext _db;
 
+        /// <summary>
+        /// Конструктор, принимет контекст подключения к БД
+        /// </summary>
+        /// <param name="context">Котекст подключения к БД</param>
         public UsersRepository(ApplicationContext context)
         {
             _db = context;
         }
 
-        /// <inheritdoc cref="IUserRepository.GetAll(UserFilter filter)"/>
+        /// <inheritdoc cref="IUsersRepository.GetAll(UserFilter filter)"/>
         public async Task<List<User>> GetAll(UserFilter filter)
         {
             IQueryable<User> query = _db.Users;
@@ -58,35 +60,20 @@ namespace HotelWebApp.Repositories
             return await query.ToListAsync();
         }
         
-        /// <inheritdoc cref="IUserRepository.Add(LoginData loginData)"/>
-        public async Task Add(RegisterData registerData)
+        /// <inheritdoc cref="IUsersRepository.Add(LoginData loginData)"/>
+        public async Task Add(User user)
         {
-            if (await _db.Users.FirstOrDefaultAsync(u => u.Email == registerData.Email) == null)
-            {
-                User user = new User 
-                { 
-                    FullName = registerData.FullName, 
-                    Email = registerData.Email, 
-                    Password = registerData.Password, 
-                    RegisteredAt = DateTime.Today,
-                    Role = Role.User 
-                };
-                await _db.Users.AddAsync(user);
-                await _db.SaveChangesAsync();
-            }
-            else
-            {
-                throw new UserExistsException();
-            }
+            await _db.Users.AddAsync(user);
+            await _db.SaveChangesAsync();
         }
 
-        /// <inheritdoc cref="IUserRepository.GetById(int id)"/>
+        /// <inheritdoc cref="IUsersRepository.GetById(int id)"/>
         public async Task<User?> GetById(int id)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        /// <inheritdoc cref="IUserRepository.GetByEmail(string email)"/>
+        /// <inheritdoc cref="IUsersRepository.GetByEmail(string email)"/>
         public async Task<User?> GetByEmail(string email)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Email == email);

@@ -1,7 +1,6 @@
 using HotelWebApp.Controllers;
 using HotelWebApp.Enums;
 using HotelWebApp.Filters;
-using HotelWebApp.Mappers;
 using HotelWebApp.Models;
 using HotelWebApp.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -56,7 +55,7 @@ public class AdminUsersControllerTests
     public async Task GetAllUsersTest()
     {
         var filter = new UserFilter();
-        var mock = new Mock<IUserRepository>();
+        var mock = new Mock<IUsersRepository>();
         mock.Setup(repo => repo.GetAll(filter)).ReturnsAsync(_testData);
         var controller = new AdminUsersController(mock.Object);
 
@@ -64,7 +63,7 @@ public class AdminUsersControllerTests
 
         foreach (var user in _testData)
         {
-            testResultList.Add(Mapper.ToUserDTO(user));
+            testResultList.Add(user.ToUserDTO());
         }
 
         var result = await controller.GetUsers(filter) as OkObjectResult;

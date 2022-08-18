@@ -1,6 +1,4 @@
-﻿using HotelWebApp.Enums;
-using HotelWebApp.Models;
-using HotelWebApp.Repositories;
+﻿using HotelWebApp.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,18 +14,18 @@ namespace HotelWebApp.Controllers;
 public class AdminBookingsController : ControllerBase
 {
     /// <summary>
-    /// Реализация репозитрия для работы с бронямм
+    /// Интерфейс сервиса для работы с бронями
     /// </summary>
-    private readonly IBookingRepository _bookingRepository;
+    private readonly IBookingsService _bookingsService;
 
     /// <summary>
     /// Конструктор контроллера, устанавливающий класс,
-    /// реализующий интрефейс репозитория
+    /// реализующий интрефейс сервиса
     /// </summary>
-    /// <param name="bookingRepository"></param>
-    public AdminBookingsController(IBookingRepository bookingRepository)
+    /// <param name="bookingsService">Сервис дял работы с бронями</param>
+    public AdminBookingsController(IBookingsService bookingsService)
     {
-        _bookingRepository = bookingRepository;
+        _bookingsService = bookingsService;
     }
     
     /// <summary>
@@ -40,7 +38,7 @@ public class AdminBookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> GetAllBookings()
     {
-        var bookings = await _bookingRepository.GetAll();
+        var bookings = await _bookingsService.GetAll();
 
         return Ok(bookings);
     }
@@ -56,12 +54,8 @@ public class AdminBookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> ConfirmBooking(int bookingId)
     {
-        var statusData = new StatusData
-        {
-            BookingId = bookingId,
-            NewStatus = BookingStatus.Confirm
-        };
-        await _bookingRepository.UpdateStatus(statusData);
+        await _bookingsService.ConfirmBooking(bookingId);
+        
         return NoContent();
     }
     
@@ -79,7 +73,10 @@ public class AdminBookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> EvictClient(int bookingId)
     {
-        await _bookingRepository.EvictClient(bookingId);
+        var booking = await _bookingsService.GetById(bookingId);
+        
+        await _bookingsService.CancelBooking(booking.ResidentId, bookingId);
+        
         return NoContent();
     }
 }

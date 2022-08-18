@@ -1,7 +1,7 @@
 ﻿namespace HotelWebApp.Exceptions;
 
 /// <summary>
-/// Исключение, возникающее при неправильном вводе дат
+/// Исключение, возникающее при неправильном вводе дат, наследуется от RequestException
 /// </summary>
 public class DatesValidationException : RequestException
 {

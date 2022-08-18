@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using HotelWebApp.Enums;
+using HotelWebApp.Models;
 
 namespace HotelWebApp
 {
@@ -37,5 +38,21 @@ namespace HotelWebApp
         
         /// <inheritdoc cref="Role"/>
         public Role Role { get; set; }
+        
+        /// <summary>
+        /// Преобразование в <c>UserDTO</c> из <c>User</c>
+        /// </summary>
+        /// <returns>Объект в виде объекта <c>UserDTO</c></returns>
+        public UserDTO ToUserDTO()
+        {
+            return new UserDTO
+            {
+                Id = this.Id,
+                Email = this.Email,
+                FullName = this.FullName,
+                RegisteredAt = this.RegisteredAt,
+                Role = this.Role
+            };
+        }
     }
 }

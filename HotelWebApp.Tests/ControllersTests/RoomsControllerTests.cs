@@ -42,7 +42,7 @@ public class RoomsControllerTests
     {
         var filter = new RoomFilter();
 
-        var mock = new Mock<IRoomRepository>();
+        var mock = new Mock<IRoomsRepository>();
         mock.Setup(repo => repo.GetAll(filter)).ReturnsAsync(_testData);
 
         var controller = new RoomsController(mock.Object);
@@ -63,7 +63,7 @@ public class RoomsControllerTests
     [Test]
     public async Task GetRoomByIdTests()
     {
-        var mock = new Mock<IRoomRepository>();
+        var mock = new Mock<IRoomsRepository>();
         mock.Setup(repo => repo.GetById(1)).ReturnsAsync(_testData[0]);
 
         var controller = new RoomsController(mock.Object);

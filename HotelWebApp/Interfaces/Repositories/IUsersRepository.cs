@@ -1,12 +1,11 @@
 ﻿using HotelWebApp.Filters;
-using HotelWebApp.Models;
 
 namespace HotelWebApp.Repositories;
 
 /// <summary>
 /// Интерфейс для работы с репозиторием комнат
 /// </summary>
-public interface IUserRepository
+public interface IUsersRepository
 {
     /// <summary>
     /// Добавляет нового пользователя
@@ -14,7 +13,7 @@ public interface IUserRepository
     /// <param name="loginData">
     /// Email и пароль пользователя
     /// </param>
-    Task Add(RegisterData registerData);
+    Task Add(User user);
 
     /// <summary>
     /// Возвращает список комнат с использованием фильтров и сортировки

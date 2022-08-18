@@ -54,7 +54,7 @@ public class AdminBookingControllerTests
     [Test]
     public async Task GetAllBookingsTest()
     {
-        var mock = new Mock<IBookingRepository>();
+        var mock = new Mock<IBookingsRepository>();
         mock.Setup(repo => repo.GetAll()).ReturnsAsync(_testData);
         var controller = new AdminBookingsController(mock.Object);
 
@@ -79,7 +79,7 @@ public class AdminBookingControllerTests
             BookingId = 1,
             NewStatus = BookingStatus.Confirm
         };
-        var mock = new Mock<IBookingRepository>();
+        var mock = new Mock<IBookingsRepository>();
         mock.Setup(repo => repo.UpdateStatus(newStatusData));
         var controller = new AdminBookingsController(mock.Object);
 
@@ -94,7 +94,7 @@ public class AdminBookingControllerTests
     [Test]
     public async Task EvictClientTest()
     {
-        var mock = new Mock<IBookingRepository>();
+        var mock = new Mock<IBookingsRepository>();
         mock.Setup(repo => repo.EvictClient(1));
         var controller = new AdminBookingsController(mock.Object);
 
@@ -106,9 +106,7 @@ public class AdminBookingControllerTests
     /// <summary>
     /// Метод для проверки эквивалентности значений списка
     /// </summary>
-    /// <param name="a">Первый список</param>
-    /// <param name="b">Второй список</param>
-    /// <returns>Возваращает true, если списки одинаковы, false, если нет</returns>
+     
     public async Task<bool> BookingListIsEqual(List<Booking> a, List<Booking> b)
     {
         for (int i = 0; i < b.Count; i++)

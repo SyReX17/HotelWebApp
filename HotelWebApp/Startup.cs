@@ -1,7 +1,9 @@
 ﻿using System.Security.Authentication;
 using HotelWebApp.Exceptions;
+using HotelWebApp.Interfaces.Services;
 using HotelWebApp.MIddlewares;
 using HotelWebApp.Repositories;
+using HotelWebApp.Services;
 using HotelWebApp.Workers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
@@ -13,25 +15,24 @@ public class Startup
     {
         services.AddDbContext<ApplicationContext>();
         
-        services.AddScoped<IUserRepository, UsersRepository>();
-        services.AddScoped<IRoomRepository, RoomsRepository>();
-        services.AddScoped<IBookingRepository, BookingRepository>();
+        services.AddScoped<IUsersRepository, UsersRepository>();
+        services.AddScoped<IRoomsRepository, RoomsRepository>();
+        services.AddScoped<IBookingsRepository, BookingsRepository>();
+        services.AddScoped<IInvoicesRepository, InvoicesRepository>();
+
+        services.AddScoped<IUsersService, UsersService>();
+        services.AddScoped<IRoomsService, RoomsService>();
+        services.AddScoped<IBookingsService, BookingsService>();
+        services.AddScoped<IInvoicesService, InvoicesService>();
         
-        services.AddScoped<IMethodCallService, MethodCallService>();
-        services.AddHostedService<TimerBackgroundService>();
+        services.AddHostedService<BookingBackgroundService>();
         
         services.AddControllers();
         
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
         {
-            options.Events.OnRedirectToLogin = context =>
-            {
-                throw new UnauthorizedException();
-            };
-            options.Events.OnRedirectToAccessDenied = context =>
-            {
-                throw new AccessDeniedException();
-            };
+            options.Events.OnRedirectToLogin = context => throw new UnauthorizedException();
+            options.Events.OnRedirectToAccessDenied = context => throw new AccessDeniedException();
         });
         services.AddAuthorization();
         

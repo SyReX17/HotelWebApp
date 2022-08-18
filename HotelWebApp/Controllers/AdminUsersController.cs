@@ -1,9 +1,8 @@
 ﻿using HotelWebApp.Filters;
-using HotelWebApp.Mappers;
+using HotelWebApp.Interfaces.Services;
 using HotelWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HotelWebApp.Repositories;
 
 namespace HotelWebApp.Controllers;
 
@@ -17,18 +16,18 @@ namespace HotelWebApp.Controllers;
 public class AdminUsersController : ControllerBase
 {
     /// <summary>
-    /// Реализация репозитория для работы с БД
-    /// через интерфейс <c>IUserRepository</c>
+    /// Интерфейс сервиса для работы с пользователями
     /// </summary>
-    private readonly IUserRepository _usersRepository;
+    private readonly IUsersService _usersService;
 
     /// <summary>
     /// Конструктор контроллера, устанавливает класс,
-    /// реализующий интерфейс репозитория
+    /// реализующий интерфейс сервиса
     /// </summary>
-    public AdminUsersController(IUserRepository userRepository)
+    /// <param name="usersService">Сервис для работы с пользователями</param>
+    public AdminUsersController(IUsersService usersService)
     {
-        _usersRepository = userRepository;
+        _usersService = usersService;
     }
     
     /// <summary>
@@ -43,8 +42,8 @@ public class AdminUsersController : ControllerBase
     [ProducesResponseType(400)]
     public async Task<IActionResult> GetUsers([FromQuery] UserFilter filter)
     {
-        var users = await _usersRepository.GetAll(filter);
+        var users = await _usersService.GetAll(filter);
 
-        return Ok(users.Select(u => Mapper.ToUserDTO(u)).ToList());
+        return Ok(users);
     }
 }

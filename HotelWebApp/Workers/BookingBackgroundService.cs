@@ -1,9 +1,11 @@
-﻿namespace HotelWebApp.Workers;
+﻿using HotelWebApp.Interfaces.Services;
+
+namespace HotelWebApp.Workers;
 
 /// <summary>
 /// Класс для фоновой задачи таймера
 /// </summary>
-public class TimerBackgroundService : BackgroundService
+public class BookingBackgroundService : BackgroundService
 {
     /// <summary>
     /// Таймер
@@ -19,12 +21,11 @@ public class TimerBackgroundService : BackgroundService
     /// Конструктор класса, инициализирующий таймер
     /// </summary>
     /// <param name="services"></param>
-    public TimerBackgroundService(IServiceProvider services)
+    public BookingBackgroundService(IServiceProvider services)
     {
         Services = services;
-        _timer = new System.Timers.Timer();
+        _timer = new System.Timers.Timer(10000);
         _timer.AutoReset = true;
-        _timer.Interval = 10000;
         _timer.Elapsed += DoWork;
     }
 
@@ -32,9 +33,10 @@ public class TimerBackgroundService : BackgroundService
     /// Переопределение метода родительского класса <c>BackgroundService</c>,
     /// </summary>
     /// <param name="stoppingToken"></param>
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _timer.Enabled = true;
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -45,9 +47,10 @@ public class TimerBackgroundService : BackgroundService
     {
         using (var scope = Services.CreateScope())
         {
-            var scopeService = scope.ServiceProvider.GetRequiredService<IMethodCallService>();
+            var scopeService = scope.ServiceProvider.GetRequiredService<IBookingsService>();
 
-            await scopeService.DoWork();
+            await scopeService.CheckBookingConfirm();
+            await scopeService.CheckBookingEnding();
         }
     }
 }

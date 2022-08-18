@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using HotelWebApp.Exceptions;
-using HotelWebApp.Repositories;
-using Microsoft.AspNetCore.Identity;
+using HotelWebApp.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using BC = BCrypt.Net.BCrypt;
 
@@ -20,33 +18,18 @@ namespace HotelWebApp.Controllers
     public class AuthenticationController : ControllerBase
     {
         /// <summary>
-        /// Реализация репозитория для работы с БД
-        /// через интерфейс <c>IUserRepository</c>
+        /// Интерфейс сервиса для работы с пользователями
         /// </summary>
-        private readonly IUserRepository _usersRepository;
+        private readonly IUsersService _usersService;
 
         /// <summary>
         /// Конструктор контроллера, устанавливает класс,
-        /// реализующий интерфейс репозитория
+        /// реализующий интерфейс сервиса
         /// </summary>
-        public AuthenticationController(IUserRepository userRepository)
+        /// <param name="usersService">Сервис для работы с пользователями</param>
+        public AuthenticationController(IUsersService usersService)
         {
-            _usersRepository = userRepository;
-        }
-
-        private PasswordHasher<User> _hasher = new PasswordHasher<User>();
-          
-        /// <summary>
-        /// Конечная точка для отказа в доступе к ресурсу,
-        /// генерирует исключение
-        /// </summary>
-        /// <response code="403">Отсутсвует доступ к запрашиваемому ресурсу</response>
-        /// <exception cref="AccessException"></exception>
-        [ProducesResponseType(403)]
-        [HttpGet("accessdenied")]
-        public async Task Deny()
-        {
-            throw new AccessDeniedException(  );
+            _usersService = usersService;
         }
         
         /// <summary>
@@ -67,17 +50,8 @@ namespace HotelWebApp.Controllers
         [ProducesResponseType(401)]
         public async Task<IActionResult> Login([FromBody]LoginData loginData)
         {
-            var user = await _usersRepository.GetByEmail(loginData.Email);
+            var claims = await _usersService.GetUserClaims(loginData);
             
-            if (user == null) throw new UserNotFoundException();
-
-            if (!BC.Verify(loginData.Password, user.Password)) throw new PasswordValidationException();
-            
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role.ToString())
-            };
             var claimsIdentity = new ClaimsIdentity(claims, "Cookies");
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             
@@ -101,8 +75,7 @@ namespace HotelWebApp.Controllers
         [ProducesResponseType(400)]
         public async Task<IActionResult> Register([FromBody] RegisterData registerData)
         {
-            registerData.Password = BC.HashPassword(registerData.Password);
-            await _usersRepository.Add(registerData);
+            await _usersService.Add(registerData);
             
             return NoContent();
         }
