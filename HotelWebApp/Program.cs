@@ -1,5 +1,8 @@
 namespace HotelWebApp;
 
+/// <summary>
+/// Класс программы
+/// </summary>
 public class Program
 {
     public static void Main(string[] args)
