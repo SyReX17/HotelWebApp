@@ -51,6 +51,11 @@ namespace HotelWebApp
             FinishAt = DateTime.Today.AddHours(DateTime.Now.Hour).AddMinutes(DateTime.Now.Minute);
         }
         
+        /// <summary>
+        /// Получение стоимости проживания
+        /// </summary>
+        /// <param name="basePrice">Базавая стоимость проживания</param>
+        /// <returns>Стоимость проживания за определенный промежуток времени</returns>
         public decimal GetPrice(decimal basePrice)
         {
             var diffTime = FinishAt.Value.Subtract(StartAt.Value);
