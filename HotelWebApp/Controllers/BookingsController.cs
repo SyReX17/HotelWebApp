@@ -51,9 +51,7 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> AddBooking([FromBody] UserBookingData bookingData)
     {
-        var user = await _usersService.GetByEmail(HttpContext.User.Identity.Name);
-            
-        var booking = await _bookingsService.Add(bookingData, user.Id);
+        var booking = await _bookingsService.Add(bookingData, HttpContext.User.Identity.Name);
 
         return CreatedAtAction(nameof(AddBooking), booking);
     }
@@ -73,8 +71,7 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> ExtendBooking(int bookingId, [FromBody] NewFinishDate date)
     {
-        var user = await _usersService.GetByEmail(HttpContext.User.Identity.Name);
-        await _bookingsService.ExtendBooking(user.Id, bookingId, date.FinishAt);
+        await _bookingsService.ExtendBooking(HttpContext.User.Identity.Name, bookingId, date.FinishAt);
 
         return NoContent();
     }
@@ -93,8 +90,7 @@ public class BookingsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> CancelBooking(int bookingId)
     {
-        var user = await _usersService.GetByEmail(HttpContext.User.Identity.Name);
-        await _bookingsService.CancelBooking(user.Id, bookingId);
+        await _bookingsService.CancelBooking(HttpContext.User.Identity.Name, bookingId);
 
         return NoContent();
     }

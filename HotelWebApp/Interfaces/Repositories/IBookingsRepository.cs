@@ -47,10 +47,10 @@ public interface IBookingsRepository
     /// </summary>
     /// <returns>Список завершенных броней</returns>
     Task<List<Booking>> GetComletedBookings();
-    
+
     /// <summary>
-    /// Сохранение изменений
+    /// Обновление данных
     /// </summary>
-    /// <returns></returns>
-    Task SaveChanges();
+    /// <param name="booking">Объект, который нужно обновить</param>
+    Task Update(Booking booking);
 }

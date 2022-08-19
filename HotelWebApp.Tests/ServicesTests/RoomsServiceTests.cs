@@ -1,20 +1,17 @@
-﻿using System.Net;
-using HotelWebApp.Controllers;
-using HotelWebApp.Enums;
+﻿using HotelWebApp.Enums;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Filters;
 using HotelWebApp.Models;
 using HotelWebApp.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using HotelWebApp.Services;
 using Moq;
 
-namespace HotelWebApp.Tests;
+namespace HotelWebApp.Tests.ServicesTests;
 
 /// <summary>
-/// Класс для тестирования контроллера для работы с комнатами
+/// Класс для тестирования сервиса для работы с комнатами
 /// </summary>
-public class RoomsControllerTests
+public class RoomsServiceTests
 {
     /// <summary>
     /// Тестовый список комнат
@@ -35,30 +32,26 @@ public class RoomsControllerTests
     }
 
     /// <summary>
-    /// Метод для проверки получения всех комнат
+    /// Метод для тестирования получения всех комнат
     /// </summary>
     [Test]
-    public async Task GetAllRoomsTests()
+    public async Task GetAllTests()
     {
         var filter = new RoomFilter();
 
         var mock = new Mock<IRoomsRepository>();
         mock.Setup(repo => repo.GetAll(filter)).ReturnsAsync(_testData);
 
-        var controller = new RoomsController(mock.Object);
+        var service = new RoomsService(mock.Object);
 
-        var result = await controller.GetAllRooms(filter) as OkObjectResult;
+        var result = await service.GetAll(filter);
         
         Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
-
-        var listResult = result.Value as List<HotelRoom>;
-        
-        Assert.IsTrue(await RoomsListsAreEqual(_testData, listResult));
+        Assert.IsTrue(await RoomListsAreEqual(result, _testData));
     }
 
     /// <summary>
-    /// Метод для проверки получения комнаты по идентификатору
+    /// Метод для тестирования получения команты по идентификатору
     /// </summary>
     [Test]
     public async Task GetRoomByIdTests()
@@ -66,17 +59,54 @@ public class RoomsControllerTests
         var mock = new Mock<IRoomsRepository>();
         mock.Setup(repo => repo.GetById(1)).ReturnsAsync(_testData[0]);
 
-        var controller = new RoomsController(mock.Object);
+        var service = new RoomsService(mock.Object);
 
-        var result = await controller.GetRoom(1) as OkObjectResult;
+        var result = await service.GetById(1);
         
         Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
-
-        var roomResult = result.Value as HotelRoom;
-        
-        Assert.IsTrue(await RoomsAreEqual(_testData[0], roomResult));
+        Assert.IsTrue(await RoomsAreEqual(result, _testData[0]));
     }
+    
+    /// <summary>
+    /// Метод для проверки получения всех комнат и ошибок при получении комнат
+    /// </summary>
+    [Test]
+    public async Task GetFreeRoomsTests()
+    {
+        var testFilter = new BookingFilter
+        {
+            Type = RoomType.High,
+            StartAt = DateTime.Now.AddMinutes(5),
+            FinishAt = DateTime.Now.AddMinutes(10)
+        };
+        var mock = new Mock<IRoomsRepository>();
+        mock.Setup(repo => repo.GetFreeRooms(testFilter)).ReturnsAsync(_testData);
+
+        var service = new RoomsService(mock.Object);
+
+        var result = await service.GetFreeRooms(testFilter);
+        
+        Assert.IsNotNull(result);
+        
+        Assert.IsTrue(await RoomListsAreEqual(result, _testData));
+        
+        var errorFilterData = new BookingFilter
+        {
+            Type = RoomType.High,
+            StartAt = DateTime.Now.AddMinutes(10),
+            FinishAt = DateTime.Now.AddMinutes(5)
+        };
+
+        try
+        {
+            result = await service.GetFreeRooms(errorFilterData);
+        }
+        catch (RequestException e)
+        {
+            Assert.IsTrue(e is DatesValidationException);
+        }
+    }
+
     
     /// <summary>
     /// Метод для проверки эквивалентности списков комнат
@@ -84,7 +114,7 @@ public class RoomsControllerTests
     /// <param name="a">Первый список</param>
     /// <param name="b">Второй список</param>
     /// <returns>Возваращает true, если списки одинаковы, false, если нет</returns>
-    public async Task<bool> RoomsListsAreEqual(List<HotelRoom> a, List<HotelRoom> b)
+    public async Task<bool> RoomListsAreEqual(List<HotelRoom> a, List <HotelRoom> b)
     {
         for (int i = 0; i < b.Count; i++)
         {
@@ -93,7 +123,7 @@ public class RoomsControllerTests
 
         return true;
     }
-
+    
     /// <summary>
     /// Метод для эквивалентности комнат
     /// </summary>
@@ -106,7 +136,7 @@ public class RoomsControllerTests
               a.Number == b.Number &&
               a.Status == b.Status &&
               a.Type == b.Type)
-            ) return false;
+           ) return false;
         
         return true;
     }

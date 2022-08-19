@@ -20,12 +20,12 @@ public interface IInvoicesRepository
     /// <summary>
     /// Добавление списка счетов на оплату
     /// </summary>
-    /// <param name="list"></param>
-    /// <returns></returns>
+    /// <param name="list">Списко счетов на оплату</param>
     Task AddRange(List<Invoice> list);
 
     /// <summary>
-    /// Сохранение изменений
+    /// Обновление данных
     /// </summary>
-    Task SaveChanges();
+    /// <param name="invoice">Данные которые нужно обновить</param>
+    Task Update(Invoice invoice);
 }

@@ -41,6 +41,7 @@ public class AdminInvoicesController : ControllerBase
     public async Task<IActionResult> GetInvoices()
     {
         var invoices = await _invoicesService.GetInvoices();
+        
         return Ok(invoices);
     }
     

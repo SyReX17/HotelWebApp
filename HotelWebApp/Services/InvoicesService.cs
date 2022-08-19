@@ -32,6 +32,6 @@ public class InvoicesService : IInvoicesService
         
         invoice.Confirm();
 
-        await _repository.SaveChanges();
+        await _repository.Update(invoice);
     }
 }

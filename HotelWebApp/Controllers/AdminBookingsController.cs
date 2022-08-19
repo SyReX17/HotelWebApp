@@ -72,10 +72,8 @@ public class AdminBookingsController : ControllerBase
     [ProducesResponseType(400)]
     [ProducesResponseType(403)]
     public async Task<IActionResult> EvictClient(int bookingId)
-    {
-        var booking = await _bookingsService.GetById(bookingId);
-        
-        await _bookingsService.CancelBooking(booking.ResidentId, bookingId);
+    { 
+        await _bookingsService.EvictClient(bookingId);
         
         return NoContent();
     }

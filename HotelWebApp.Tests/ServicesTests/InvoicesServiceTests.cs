@@ -1,17 +1,16 @@
-﻿using HotelWebApp.Controllers;
-using HotelWebApp.Enums;
+﻿using HotelWebApp.Enums;
+using HotelWebApp.Exceptions;
 using HotelWebApp.Models;
 using HotelWebApp.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+using HotelWebApp.Services;
 using Moq;
 
-namespace HotelWebApp.Tests;
+namespace HotelWebApp.Tests.ServicesTests;
 
 /// <summary>
-/// Класс для тестирования контроллера администатора для работы с счетами на оплату
+/// Класс для тестирования сервиса для работы с счетами на оплату
 /// </summary>
-public class AdminInvoicesControllerTests
+public class InvoicesServiceTests
 {
     /// <summary>
     /// Тестовые данные
@@ -55,37 +54,39 @@ public class AdminInvoicesControllerTests
     [Test]
     public async Task GetInvoicesTests()
     {
-        var mock = new Mock<IBookingsRepository>();
+        var mock = new Mock<IInvoicesRepository>();
         mock.Setup(repo => repo.GetInvoices()).ReturnsAsync(_testData);
 
-        var controller = new AdminInvoicesController(mock.Object);
+        var service = new InvoicesService(mock.Object);
 
-        var result = await controller.GetInvoices() as OkObjectResult;
+        var result = await service.GetInvoices();
         
         Assert.IsNotNull(result);
-        Assert.AreEqual(StatusCodes.Status200OK, result.StatusCode);
-
-        var listResult = result.Value as List<Invoice>;
-        
-        Assert.IsTrue(await InvoicesListsIsEqual(_testData, listResult));
+        Assert.IsTrue(await InvoicesListsIsEqual(result, _testData));
     }
 
     /// <summary>
-    /// Метод для тестирования подтверждения счета на оплату
+    /// Метод для тестирования подтверждения оплаты
     /// </summary>
     [Test]
     public async Task ConfirmInvoiceTests()
     {
-        var mock = new Mock<IBookingsRepository>();
-        mock.Setup(repo => repo.ConfirmInvoice(1));
+        Invoice? nullInvoice = null;
+        var mock = new Mock<IInvoicesRepository>();
+        mock.Setup(repo => repo.GetInvoiceById(1)).ReturnsAsync(nullInvoice);
 
-        var controller = new AdminInvoicesController(mock.Object);
+        var service = new InvoicesService(mock.Object);
 
-        var result = await controller.ConfirmInvoice(1) as NoContentResult;
-        
-        Assert.AreEqual(StatusCodes.Status204NoContent, result.StatusCode);
+        try
+        {
+            await service.ConfirmInvoice(1);
+        }
+        catch (RequestException e)
+        {
+            Assert.IsTrue(e is InvoiceNotFoundException);
+        }
     }
-
+    
     /// <summary>
     /// Метод для проверки эквивалентности списков счетов на оплату
     /// </summary>

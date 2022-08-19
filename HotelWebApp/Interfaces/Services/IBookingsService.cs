@@ -16,10 +16,10 @@ public interface IBookingsService
     /// <summary>
     /// Продление бронирования
     /// </summary>
-    /// <param name="UserId">Идентификатор пользователя</param>
+    /// <param name="userEmail">Email пользователя</param>
     /// <param name="bookingId">Идентификатор брони</param>
     /// <param name="newFinishAt">Новая дата окончания проживания</param>
-    Task ExtendBooking(int userId, int bookingId, DateTime newFinishAt);
+    Task ExtendBooking(string userEmail, int bookingId, DateTime newFinishAt);
 
     /// <summary>
     /// Подтверждение бронирования
@@ -30,16 +30,16 @@ public interface IBookingsService
     /// <summary>
     /// Отмена брони или принудительное завершение проживания
     /// </summary>
-    /// <param name="UserId">Идентификатор пользователя</param>
+    /// <param name="userEmail">Email пользователя</param>
     /// <param name="bookingId">Идентификатор бронирования</param>
-    Task CancelBooking(int userId, int bookingId);
+    Task CancelBooking(string userEmail, int bookingId);
 
     /// <summary>
     /// Добавление нового бронирования
     /// </summary>
-    /// <param name="booking">Идетификатор комнаты, даты</param>
-    /// <param name="userId">Идентификатор пользователя</param>
-    Task<Booking> Add(UserBookingData data, int userID);
+    /// <param name="data">Идетификатор комнаты, даты</param>
+    /// <param name="userEmail">Email пользователя</param>
+    Task<Booking> Add(UserBookingData data, string userEmail);
     
     /// <summary>
     /// Проверка окончания срока проживания
@@ -57,4 +57,10 @@ public interface IBookingsService
     /// <param name="bookingId">Идентификатор брони</param>
     /// <returns>Бронь в виде объекта <c>Booking</c></returns>
     Task<Booking> GetById(int bookingId);
+
+    /// <summary>
+    /// Выселение клиетна
+    /// </summary>
+    /// <param name="bookingId">Идентификатор брони</param>
+    Task EvictClient(int bookingId);
 }

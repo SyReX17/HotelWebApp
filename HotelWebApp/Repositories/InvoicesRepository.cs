@@ -48,4 +48,11 @@ public class InvoicesRepository : IInvoicesRepository
     {
         await _db.SaveChangesAsync();
     }
+
+    /// <inheritdoc cref="IInvoicesRepository.Update(Invoice invoice)"/>
+    public async Task Update(Invoice invoice)
+    {
+        _db.Invoices.Update(invoice);
+        await _db.SaveChangesAsync();
+    }
 }

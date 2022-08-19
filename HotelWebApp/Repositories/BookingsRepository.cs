@@ -60,16 +60,17 @@ public class BookingsRepository : IBookingsRepository
         return await _db.Bookings.FirstOrDefaultAsync(b => b.Id == bookingId);
     }
 
-    /// <inheritdoc cref="IBookingsRepository.SaveChanges()"/>
-    public async Task SaveChanges()
-    {
-        await _db.SaveChangesAsync();
-    }
-
     /// <inheritdoc cref="IBookingsRepository.RemoveRange()"/>
     public async Task RemoveRange(List<Booking> list)
     {
         _db.Bookings.RemoveRange(list);
+        await _db.SaveChangesAsync();
+    }
+
+    /// <inheritdoc cref="IBookingsRepository.Update(Booking booking)"/>
+    public async Task Update(Booking booking)
+    {
+        _db.Bookings.Update(booking);
         await _db.SaveChangesAsync();
     }
 }

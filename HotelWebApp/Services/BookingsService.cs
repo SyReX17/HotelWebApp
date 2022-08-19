@@ -1,4 +1,5 @@
-﻿using HotelWebApp.Enums;
+﻿using System.Timers;
+using HotelWebApp.Enums;
 using HotelWebApp.Exceptions;
 using HotelWebApp.Interfaces.Services;
 using HotelWebApp.Models;
@@ -39,16 +40,18 @@ public class BookingsService : IBookingsService
     }
     
     /// <inheritdoc cref="IBookingsService.Add(UserBookingData data, int userId)"/>
-    public async Task<Booking> Add(UserBookingData data, int userId)
+    public async Task<Booking> Add(UserBookingData data, string email)
     {
         if (data.StartAt >= data.FinishAt || data.StartAt < DateTime.Now)
         {
             throw new DatesValidationException();
         }
 
+        var user = await GetUserByEmail(email);
+
         var booking = new Booking
         {
-            ResidentId = userId,
+            ResidentId = user.Id,
             RoomId = data.RoomId,
             Status = BookingStatus.Awaiting,
             StartAt = data.StartAt,
@@ -66,18 +69,20 @@ public class BookingsService : IBookingsService
         return await _bookingsRepository.GetAll();
     }
 
-    /// <inheritdoc cref="IBookingsService.ExtendBooking(int userId, int bookingId, DateTime newFinishAt)"/>
-    public async Task ExtendBooking(int userId, int bookingId, DateTime newFinishAt)
+    /// <inheritdoc cref="IBookingsService.ExtendBooking(string email, int bookingId, DateTime newFinishAt)"/>
+    public async Task ExtendBooking(string email, int bookingId, DateTime newFinishAt)
     {
         var booking = await _bookingsRepository.GetById(bookingId);
 
         if (booking == null) throw new BookingNotFoundException();
 
-        if (booking.ResidentId != userId) throw new BookingNotFoundException();
+        var user = await GetUserByEmail(email);
+
+        if (booking.ResidentId != user.Id) throw new BookingNotFoundException();
 
         booking.FinishAt = newFinishAt;
 
-        await _bookingsRepository.SaveChanges();
+        await _bookingsRepository.Update(booking);
     }
 
     /// <inheritdoc cref="IBookingsService.ConfirmBooking(int bookingId)"/>
@@ -89,17 +94,19 @@ public class BookingsService : IBookingsService
 
         booking.Confirm();
 
-        await _bookingsRepository.SaveChanges();
+        await _bookingsRepository.Update(booking);
     }
 
     /// <inheritdoc cref="IBookingsService.CancelBooking(int userId, int bookingId)"/>
-    public async Task CancelBooking(int userId, int bookingId)
+    public async Task CancelBooking(string email, int bookingId)
     {
         var booking = await _bookingsRepository.GetById(bookingId);
 
         if (booking == null) throw new BookingNotFoundException();
 
-        if (booking.ResidentId != userId) throw new BookingNotFoundException();
+        var user = await GetUserByEmail(email);
+
+        if (booking.ResidentId != user.Id) throw new BookingNotFoundException();
 
         if (booking.StartAt > DateTime.Now)
         {
@@ -110,7 +117,7 @@ public class BookingsService : IBookingsService
             booking.Stop();
         }
 
-        await _bookingsRepository.SaveChanges();
+        await _bookingsRepository.Update(booking);
     }
 
     /// <inheritdoc cref="IBookingsService.CheckBookingEnding()"/>
@@ -165,5 +172,25 @@ public class BookingsService : IBookingsService
         if (booking == null) throw new BookingNotFoundException();
 
         return booking;
+    }
+
+    public async Task EvictClient(int bookingId)
+    {
+        var booking = await _bookingsRepository.GetById(bookingId);
+        
+        if (booking == null) throw new BookingNotFoundException();
+
+        var user = await _usersRepository.GetById(booking.ResidentId);
+
+        await CancelBooking(user.Email, bookingId);
+    }
+    
+    public async Task<User> GetUserByEmail(string email)
+    {
+        var user = await _usersRepository.GetByEmail(email);
+
+        if (user == null) throw new UserNotFoundException();
+
+        return user;
     }
 }
