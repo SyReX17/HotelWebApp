@@ -1,0 +1,33 @@
+﻿version: '3.4'
+
+services:
+  api:
+    image: hotel-app:api
+    container_name: hotel-api
+    restart: always
+    ports:
+      - 5000:5000
+    build:
+      context: .
+      dockerfile: HotelWebApp/Dockerfile
+    networks:
+      - network
+    depends_on:
+      - db
+    links:
+      - db
+      
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
+    ports:
+      - '5432:5432'
+    networks:
+      - network
+    
+networks:
+  network:
+    driver: bridge

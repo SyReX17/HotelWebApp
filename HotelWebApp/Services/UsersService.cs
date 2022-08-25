@@ -51,8 +51,6 @@ public class UsersService : IUsersService
         var user = await _repository.GetByEmail(registerData.Email);
             
         if (user != null) throw new UserExistsException();
-            
-        registerData.Password = BC.HashPassword(registerData.Password);
         
         User newUser = new User 
         { 

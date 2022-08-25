@@ -15,7 +15,7 @@ public class BookingBackgroundService : BackgroundService
     /// <summary>
     /// Провайдер сервисов
     /// </summary>
-    private IServiceProvider Services;
+    private IServiceProvider _services;
 
     /// <summary>
     /// Конструктор класса, инициализирующий таймер
@@ -23,7 +23,7 @@ public class BookingBackgroundService : BackgroundService
     /// <param name="services"></param>
     public BookingBackgroundService(IServiceProvider services)
     {
-        Services = services;
+        _services = services;
         _timer = new System.Timers.Timer(10000);
         _timer.AutoReset = true;
         _timer.Elapsed += DoWork;
@@ -45,7 +45,7 @@ public class BookingBackgroundService : BackgroundService
     /// </summary>
     public async void DoWork(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        using (var scope = Services.CreateScope())
+        using (var scope = _services.CreateScope())
         {
             var scopeService = scope.ServiceProvider.GetRequiredService<IBookingsService>();
 

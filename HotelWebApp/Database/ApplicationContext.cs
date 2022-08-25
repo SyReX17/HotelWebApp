@@ -34,28 +34,9 @@ public class ApplicationContext : DbContext
     public DbSet<Invoice> Invoices { get; set; } = null!;
 
     /// <summary>
-    /// Конструктор контекста, создает БД, если она не создана
+    /// Конструктор контекста, принимает и передает настройки в базовый конструктор
     /// </summary>
-    public ApplicationContext()
+    public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
     {
-        Database.EnsureCreated();
-    }
-
-    /// <summary>
-    /// Переопределение метода <c>OnConfiguring</c> для установления подключения к БД
-    /// </summary>
-    /// <param name="optionsBuilder">Параметр для настройки строки подключения к БД</param>
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=hotelappdb;Trusted_Connection=True;");
-    }
-    
-    /// <summary>
-    /// Устанавливает начальные данные в БД, при её создании
-    /// </summary>
-    /// <param name="modelBuilder">Параметр для установления начальных значений в БД</param>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        
     }
 }

@@ -1,20 +1,27 @@
-﻿using System.Security.Authentication;
-using HotelWebApp.Exceptions;
+﻿using HotelWebApp.Exceptions;
 using HotelWebApp.Interfaces.Services;
 using HotelWebApp.MIddlewares;
 using HotelWebApp.Repositories;
 using HotelWebApp.Services;
 using HotelWebApp.Workers;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.EntityFrameworkCore;
 
 namespace HotelWebApp;
 
 public class Startup
 {
+    public IConfiguration Configuration;
+    public Startup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+    
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<ApplicationContext>();
-        
+        services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         services.AddScoped<IUsersRepository, UsersRepository>();
         services.AddScoped<IRoomsRepository, RoomsRepository>();
         services.AddScoped<IBookingsRepository, BookingsRepository>();
@@ -24,7 +31,7 @@ public class Startup
         services.AddScoped<IRoomsService, RoomsService>();
         services.AddScoped<IBookingsService, BookingsService>();
         services.AddScoped<IInvoicesService, InvoicesService>();
-        
+
         services.AddHostedService<BookingBackgroundService>();
         
         services.AddControllers();
@@ -40,7 +47,7 @@ public class Startup
         services.AddSwaggerGen();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public async void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseMiddleware<ErrorHandlerMiddleware>();
 
@@ -51,11 +58,8 @@ public class Startup
             {
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
             });
-
-            IInitializer initializer = new ProjectInitializer();
-            var context = new ApplicationContext();
-            initializer.Initialize(context);
         }
+        
         app.UseRouting();
 
         app.UseAuthentication();
@@ -65,5 +69,12 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+        
+        using (var scope = app.ApplicationServices.CreateScope())
+        {
+            var scopeProvider = scope.ServiceProvider;
+            var context = scopeProvider.GetRequiredService<ApplicationContext>();
+            await ProjectInitializer.Initialize(context);
+        }
     }
 }

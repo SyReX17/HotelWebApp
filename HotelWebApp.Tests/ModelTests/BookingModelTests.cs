@@ -66,8 +66,6 @@ public class BookingModelTests
         };
 
         var price = booking.GetPrice(60);
-
-        Console.WriteLine(price);
         
         Assert.IsTrue(price - Convert.ToDecimal(60) <= Convert.ToDecimal(Math.Pow(10, -6)));
     }

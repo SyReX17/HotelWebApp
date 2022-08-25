@@ -1,8 +1,9 @@
-﻿using HotelWebApp.Exceptions;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+using HotelWebApp.Exceptions;
 using HotelWebApp.Interfaces.Services;
 using HotelWebApp.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace HotelWebApp.Controllers;
 
