@@ -17,19 +17,10 @@ namespace HotelWebApp.Models
         /// </summary>
         public int Number { get; set; }
         
-        /// <summary>
-        /// Статус состояния комнаты
-        /// </summary>
+        /// <inheritdoc cref="HotelRoomStatus"/>
         public HotelRoomStatus? Status { get; set; }
         
-        /// <summary>
-        /// Внешний ключ для типов комнат
-        /// </summary>
-        public int TypeId { get; set; }
-        
-        /// <summary>
-        /// Тип комнаты
-        /// </summary>
+        /// <inheritdoc cref="HotelRoomType"/>
         public HotelRoomType? Type { get; set; }
     }
 }

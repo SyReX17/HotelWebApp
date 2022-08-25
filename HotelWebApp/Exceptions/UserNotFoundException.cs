@@ -5,5 +5,5 @@
 /// </summary>
 public class UserNotFoundException : RequestException
 {
-    public UserNotFoundException(string message, int statusCode) : base(message, statusCode) {}
+    public UserNotFoundException() : base("Пользователь не найден", 401) {}
 }

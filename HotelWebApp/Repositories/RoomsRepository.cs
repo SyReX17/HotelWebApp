@@ -2,7 +2,6 @@
 using HotelWebApp.Filters;
 using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Models;
-using HotelWebApp.Sorting;
 
 namespace HotelWebApp.Repositories
 {
@@ -10,53 +9,71 @@ namespace HotelWebApp.Repositories
     /// Класс репозитория для взаимодействия с БД,
     /// реализует интерфейс <c>IRoomRepository</c>
     /// </summary>
-    public class RoomsRepository : IRoomRepository
+    public class RoomsRepository : IRoomsRepository
     {
         /// <summary>
         /// Контекст подключения к БД
         /// </summary>
-        private ApplicationContext _db = new ApplicationContext();
+        private ApplicationContext _db;
 
-        /// <inheritdoc cref="IRoomRepository.GetAll(UserFilter filter)"/>
-        public async Task<List<HotelRoom>> GetAll(RoomFilter filter)
+        /// <summary>
+        /// Конструктор, принимает контекст подключения к БД
+        /// </summary>
+        /// <param name="context">Контекст подключения к БД</param>
+        public RoomsRepository(ApplicationContext context)
         {
-            List<HotelRoom> rooms;
-
-            if (filter.Status.HasValue && filter.Type.HasValue)
-            {
-                rooms = await _db.Rooms.Include(r => r.Type)
-                    .Where(r => r.Status == filter.Status && r.Type.Id == (byte)filter.Type)
-                    .ToListAsync();
-            }
-            else if (filter.Status.HasValue)
-            {
-                rooms = await _db.Rooms.Include(r => r.Type)
-                    .Where(r => r.Status == filter.Status).ToListAsync();
-            }
-            else if (filter.Type.HasValue)
-            {
-                rooms = await _db.Rooms.Include(r => r.Type)
-                    .Where(r => r.Type.Id == (byte)filter.Type).ToListAsync();
-            }
-            else
-            {
-                rooms = await _db.Rooms.Include(r => r.Type).ToListAsync();
-            }
-
-            if (filter.SortBy.HasValue)
-            {
-                ISorter<HotelRoom> sorter = new RoomSorter();
-                return sorter.Sort(rooms, (byte)filter.SortBy, filter.SortOrder).ToList();  
-            }
-
-            return rooms;
+            _db = context;
         }
 
-        /// <inheritdoc cref="IRoomRepository.GetById(int Id)"/>
-        public async Task<HotelRoom> GetById(int id)
+        /// <inheritdoc cref="IRoomsRepository.GetAll(UserFilter filter)"/>
+        public async Task<List<HotelRoom>> GetAll(RoomFilter filter)
         {
-            var room = await _db.Rooms.Include(r => r.Type).FirstOrDefaultAsync(room => room.Id == id);
-            return room;
+            IQueryable<HotelRoom> query = _db.Rooms.Include(r => r.Type);
+
+            if (filter.Status.HasValue)
+            {
+                query = query.Where(r => r.Status == filter.Status);
+            }
+            
+            if (filter.Type.HasValue)
+            {
+                query = query.Where(r => r.Type.Id == (byte)filter.Type);
+            }
+
+            if (filter.SortBy.HasValue && filter.SortOrder.HasValue)
+            {
+                switch (filter.SortBy)
+                {
+                    case RoomsSortBy.Number:
+                        query = (filter.SortOrder == SortOrder.Desc) 
+                            ? query.OrderByDescending(r => r.Number) 
+                            : query.OrderBy(r => r.Number);
+                        break;
+            
+                    case RoomsSortBy.Price:
+                        query = (filter.SortOrder == SortOrder.Desc) 
+                            ? query.OrderByDescending(r => r.Type.Price) 
+                            : query.OrderBy(r => r.Type.Price);
+                        break;
+                }
+            }
+            
+            return await query.ToListAsync();
+        }
+
+        /// <inheritdoc cref="IRoomsRepository.GetById(int Id)"/>
+        public async Task<HotelRoom?> GetById(int id)
+        {
+            return await _db.Rooms.Include(r => r.Type).FirstOrDefaultAsync(room => room.Id == id);;
+        }
+        
+        /// <inheritdoc cref="IRoomsRepository.GetFreeRooms(BookingFilter filter)"/>
+        public async Task<List<HotelRoom>> GetFreeRooms(BookingFilter filter)
+        {
+            return await _db.Rooms.Include(r => r.Type).Where(r =>  !(_db.Bookings
+                .Where(b => (filter.StartAt >= b.StartAt && filter.StartAt <= b.FinishAt) || (filter.FinishAt >= b.StartAt && 
+                    filter.FinishAt <= b.FinishAt) || (filter.StartAt <= b.StartAt && filter.FinishAt >= b.FinishAt))
+                .Select(b => b.RoomId).ToList().Contains(r.Id)) && r.Type.Id == (int)filter.Type).ToListAsync();
         }
     }
 }

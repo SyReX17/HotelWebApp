@@ -3,7 +3,7 @@
 /// <summary>
 /// Параметры для сортировки пользователей
 /// </summary>
-public enum UsersSortBy : byte
+public enum UserSortBy : byte
 {
     /// <summary>
     /// Полное имя пользователя (ФИО)

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BC = BCrypt.Net.BCrypt;
+using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Enums;
 using HotelWebApp.Models;
 
@@ -7,13 +8,13 @@ namespace HotelWebApp;
 /// <summary>
 /// Класс инициализатора БД
 /// </summary>
-public class ProjectInitializer : IInitializer
+public class ProjectInitializer
 {
     /// <summary>
     /// Инициализация БД, создание, миграция, добавление начальных данных, при создании
     /// </summary>
     /// <param name="context">Контекст подключения к БД</param>
-    public async void Initialize(ApplicationContext context)
+    public static async Task Initialize(ApplicationContext context)
     {
         await context.Database.EnsureCreatedAsync();
         
@@ -24,10 +25,10 @@ public class ProjectInitializer : IInitializer
         var admin = new User
         {
             Email = "admin@mail.ru",
-            Password = "12345",
+            Password = BC.HashPassword("12345"),
             FullName = "Администратор",
             RegisteredAt = DateTime.Today,
-            Role = (byte)Role.Admin
+            Role = Role.Admin
         };
         
         await context.Users.AddAsync(admin);
@@ -63,7 +64,7 @@ public class ProjectInitializer : IInitializer
             new HotelRoom { Number = 302, Status = HotelRoomStatus.Free, Type = types[2]}
         };
 
-        await context.AddRangeAsync(rooms);
+        await context.Rooms.AddRangeAsync(rooms);
         await context.SaveChangesAsync();
     }
 }

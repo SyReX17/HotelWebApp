@@ -1,9 +1,6 @@
-﻿using System.Security.Authentication;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Enums;
-using HotelWebApp.Exceptions;
 using HotelWebApp.Filters;
-using HotelWebApp.Sorting;
 
 namespace HotelWebApp.Repositories
 {
@@ -11,78 +8,75 @@ namespace HotelWebApp.Repositories
     /// Класс репозитория для взаимодействия с БД,
     /// реализует интерфейс <c>IUserRepository</c>
     /// </summary>
-    public class UsersRepository : IUserRepository
+    public class UsersRepository : IUsersRepository
     {
         /// <summary>
         /// Контекст подключения к БД
         /// </summary>
-        private ApplicationContext _db = new ApplicationContext();
+        private ApplicationContext _db;
 
-        /// <inheritdoc cref="IUserRepository.GetAll(UserFilter filter)"/>
+        /// <summary>
+        /// Конструктор, принимет контекст подключения к БД
+        /// </summary>
+        /// <param name="context">Котекст подключения к БД</param>
+        public UsersRepository(ApplicationContext context)
+        {
+            _db = context;
+        }
+
+        /// <inheritdoc cref="IUsersRepository.GetAll(UserFilter filter)"/>
         public async Task<List<User>> GetAll(UserFilter filter)
         {
-            List<User> users;
-
-            if (!String.IsNullOrEmpty(filter.FullName) && filter.Date.HasValue)
+            IQueryable<User> query = _db.Users;
+            
+            if (!String.IsNullOrEmpty(filter.FullName))
             {
-                users = await _db.Users.Where(u =>
-                    u.FullName.ToLower().Contains(filter.FullName.ToLower()) && 
-                    DateTime.Compare(u.RegisteredAt, filter.Date.GetValueOrDefault()) == 0).ToListAsync();
+                query = query.Where(u => u.FullName.ToLower().Contains(filter.FullName.ToLower()));
             }
-            else if (!String.IsNullOrEmpty(filter.FullName))
+            
+            if (filter.Date.HasValue)
             {
-                users = await _db.Users.Where(u => u.FullName.ToLower().Contains(filter.FullName.ToLower())).ToListAsync();
-            }
-            else if (filter.Date.HasValue)
-            {
-                users = await _db.Users.Where(u => DateTime.Compare(u.RegisteredAt, filter.Date.GetValueOrDefault()) == 0).ToListAsync();
-            }
-            else
-            {
-                users =  await _db.Users.ToListAsync();
+                query = query.Where(u => DateTime.Compare(u.RegisteredAt, filter.Date.GetValueOrDefault()) == 0);
             }
 
-            if (filter.SortBy.HasValue)
+            if (filter.SortBy.HasValue && filter.SortOrder.HasValue)
             {
-                ISorter<User> sorter = new UserSorter();
-                return sorter.Sort(users, (byte)filter.SortBy, filter.SortOrder).ToList();
+                switch (filter.SortBy)
+                {
+                    case UserSortBy.Fullname:
+                        query = (filter.SortOrder == SortOrder.Desc)
+                            ? query.OrderByDescending(u => u.FullName)
+                            : query.OrderBy(u => u.FullName);
+                        break;
+
+                    case UserSortBy.Date:
+                        query = (filter.SortOrder == SortOrder.Desc)
+                            ? query.OrderByDescending(u => u.RegisteredAt)
+                            : query.OrderBy(u => u.RegisteredAt);
+                        break;
+                }
             }
-
-            return users;
-        }
-
-        /// <inheritdoc cref="IUserRepository.Get(LoginData loginData)"/>
-        public async Task<User?> Get(LoginData loginData)
-        {
-            return await _db.Users.FirstOrDefaultAsync(u => u.Email == loginData.Email && u.Password == loginData.Password);
+            
+            return await query.ToListAsync();
         }
         
-        /// <inheritdoc cref="IUserRepository.Add(LoginData loginData)"/>
-        public async Task Add(RegisterData registerData)
+        /// <inheritdoc cref="IUsersRepository.Add(LoginData loginData)"/>
+        public async Task Add(User user)
         {
-            if (await _db.Users.FirstOrDefaultAsync(u => u.Email == registerData.Email && u.Password == registerData.Password) == null)
-            {
-                User user = new User 
-                { 
-                    FullName = registerData.FullName, 
-                    Email = registerData.Email, 
-                    Password = registerData.Password, 
-                    RegisteredAt = DateTime.Today,
-                    Role = Role.User 
-                };
-                await _db.Users.AddAsync(user);
-                await _db.SaveChangesAsync();
-            }
-            else
-            {
-                throw new UserExistsException("Такой пользователь уже существует", 400);
-            }
+            await _db.Users.AddAsync(user);
+            await _db.SaveChangesAsync();
         }
 
-        /// <inheritdoc cref="IUserRepository.GetById(int id)"/>
+        /// <inheritdoc cref="IUsersRepository.GetById(int id)"/>
         public async Task<User?> GetById(int id)
         {
             return await _db.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
+        /// <inheritdoc cref="IUsersRepository.GetByEmail(string email)"/>
+        public async Task<User?> GetByEmail(string email)
+        {
+            return await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
     }
 }

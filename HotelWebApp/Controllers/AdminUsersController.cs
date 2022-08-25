@@ -1,29 +1,33 @@
 ﻿using HotelWebApp.Filters;
+using HotelWebApp.Interfaces.Services;
+using HotelWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HotelWebApp.Repositories;
 
 namespace HotelWebApp.Controllers;
 
+/// <summary>
+/// Класс контроллера для работы администратора с пользователями
+/// </summary>
 [ApiController]
-[Route("api/admin")]
+[Route("api/admin/users")]
 [Authorize(Roles = "Admin")]
 [Produces("application/json")]
-public class AdminController : ControllerBase
+public class AdminUsersController : ControllerBase
 {
     /// <summary>
-    /// Реализация репозитория для работы с БД
-    /// через интерфейс <c>IUserRepository</c>
+    /// Интерфейс сервиса для работы с пользователями
     /// </summary>
-    private IUserRepository _usersRepository;
+    private readonly IUsersService _usersService;
 
     /// <summary>
     /// Конструктор контроллера, устанавливает класс,
-    /// реализующий интерфейс репозитория
+    /// реализующий интерфейс сервиса
     /// </summary>
-    public AdminController()
+    /// <param name="usersService">Сервис для работы с пользователями</param>
+    public AdminUsersController(IUsersService usersService)
     {
-        this._usersRepository = new UsersRepository();
+        _usersService = usersService;
     }
     
     /// <summary>
@@ -34,11 +38,11 @@ public class AdminController : ControllerBase
     /// <response code="200">Успешное получение всех пользователей</response>
     /// <response code="400">Данные введены некоректно</response>
     [HttpGet]
-    [ProducesResponseType(200, Type = typeof(List<User>))]
+    [ProducesResponseType(200, Type = typeof(List<UserDTO>))]
     [ProducesResponseType(400)]
     public async Task<IActionResult> GetUsers([FromQuery] UserFilter filter)
     {
-        var users = await _usersRepository.GetAll(filter);
+        var users = await _usersService.GetAll(filter);
 
         return Ok(users);
     }

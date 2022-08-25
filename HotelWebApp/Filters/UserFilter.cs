@@ -20,10 +20,10 @@ public class UserFilter
     /// <summary>
     /// Параметры по которым может проходить сортировка
     /// </summary>
-    public UsersSortBy? SortBy { get; set; }
+    public UserSortBy? SortBy { get; set; }
     
     /// <summary>
     /// Направление сортировки
     /// </summary>
-    public SortOrder SortOrder { get; set; }
+    public SortOrder? SortOrder { get; set; }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using HotelWebApp.Models;
 using HotelWebApp;
-using HotelWebApp.Enums;
 
 
 /// <summary>
@@ -30,28 +29,14 @@ public class ApplicationContext : DbContext
     public DbSet<Booking> Bookings { get; set; } = null!;
 
     /// <summary>
-    /// Конструктор контекста, создает БД, если она не создана
+    /// Хранит набор счетов на оплату
     /// </summary>
-    public ApplicationContext()
-    {
-        Database.EnsureCreated();
-    }
+    public DbSet<Invoice> Invoices { get; set; } = null!;
 
     /// <summary>
-    /// Переопределение метода <c>OnConfiguring</c> для установления подключения к БД
+    /// Конструктор контекста, принимает и передает настройки в базовый конструктор
     /// </summary>
-    /// <param name="optionsBuilder">Параметр для настройки строки подключения к БД</param>
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
     {
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=hotelappdb;Trusted_Connection=True;");
-    }
-    
-    /// <summary>
-    /// Устанавливает начальные данные в БД, при её создании
-    /// </summary>
-    /// <param name="modelBuilder">Параметр для установления начальных значений в БД</param>
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        
     }
 }

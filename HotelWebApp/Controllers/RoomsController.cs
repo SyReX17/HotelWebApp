@@ -1,10 +1,9 @@
 ﻿using HotelWebApp.Exceptions;
-using HotelWebApp.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using HotelWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
-using HotelWebApp.Enums;
 using HotelWebApp.Filters;
+using HotelWebApp.Interfaces.Services;
 
 namespace HotelWebApp.Controllers;
 
@@ -14,23 +13,23 @@ namespace HotelWebApp.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/rooms")]
-[Authorize(Roles = "Admin, User")]
+[Authorize]
 [Produces("application/json")]
 public class RoomsController : ControllerBase
 {
     /// <summary>
-    /// Реализация репозитория для работы с БД
-    /// через интерфейс <c>IRoomRepository</c>
+    /// Интерфейс сервиса для работы с комнатами
     /// </summary>
-    private IRoomRepository _roomsRepository;
+    private readonly IRoomsService _roomsService;
 
     /// <summary>
     /// Конструктор контроллера, устанавливает класс,
-    /// реализующий интерфейс репозитория
+    /// реализующий интерфейс сервиса
     /// </summary>
-    public RoomsController()
+    /// <param name="roomsService">Сервис для работы с комнатами</param>
+    public RoomsController(IRoomsService roomsService)
     {
-        this._roomsRepository = new RoomsRepository();
+        _roomsService = roomsService;
     }
     
     /// <summary>
@@ -47,7 +46,7 @@ public class RoomsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> GetAllRooms([FromQuery] RoomFilter filter)
     {
-        var rooms = await _roomsRepository.GetAll(filter);
+        var rooms = await _roomsService.GetAll(filter);
 
         return Ok(rooms);
     }
@@ -56,7 +55,6 @@ public class RoomsController : ControllerBase
     /// Конечная точка для получения комнат по идентификатору
     /// </summary>
     /// <param name="id">Идентификатор комнаты</param>
-    /// <returns>
     /// Объект комнаты и статусный код Ок(200), или генерирует исключение
     /// <response code="200">Успешное получение комнаты</response>
     /// <response code="400">Данные введены некоректно</response>
@@ -68,10 +66,29 @@ public class RoomsController : ControllerBase
     [ProducesResponseType(403)]
     public async Task<IActionResult> GetRoom(int id)
     {
-        var room = await _roomsRepository.GetById(id);
-
-        if (room == null) throw new RoomNotFoundException("Комната не найдена", 400);
+        var room = await _roomsService.GetById(id);
 
         return Ok(room);
+    }
+    
+    /// <summary>
+    /// Конечная точка для получения свободных комнат
+    /// </summary>
+    /// <param name="filter">Фильтр для получения свободных комнат</param>
+    /// <exception cref="DatesValidationException">Даты введены неверно</exception>
+    /// <response code="200">Успешное получение свободных комнат</response>
+    /// <response code="400">Данные введены некоректно</response>
+    /// <response code="403">Отсутствие доступа к ресурсу</response>
+    [HttpGet]
+    [Route("free")]
+    [Authorize]
+    [ProducesResponseType(200, Type = typeof(List<HotelRoom>))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    public async Task<IActionResult> GetFreeRooms([FromQuery] BookingFilter filter)
+    {
+        var freeRooms = await _roomsService.GetFreeRooms(filter);
+        
+        return Ok(freeRooms);
     }
 }

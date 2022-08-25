@@ -5,26 +5,15 @@ namespace HotelWebApp.Repositories;
 /// <summary>
 /// Интерфейс для работы с репозиторием комнат
 /// </summary>
-public interface IUserRepository
+public interface IUsersRepository
 {
-    /// <summary>
-    /// Возвражает пользовалеля по его данным
-    /// </summary>
-    /// <param name="loginData">
-    /// Email и пароль пользователя
-    /// </param>
-    /// <returns>
-    /// Пользователя в виде объекта <c>User</c>
-    /// </returns>
-    Task<User?> Get(LoginData loginData);
-    
     /// <summary>
     /// Добавляет нового пользователя
     /// </summary>
     /// <param name="loginData">
     /// Email и пароль пользователя
     /// </param>
-    Task Add(RegisterData registerData);
+    Task Add(User user);
 
     /// <summary>
     /// Возвращает список комнат с использованием фильтров и сортировки
@@ -39,4 +28,11 @@ public interface IUserRepository
     /// <param name="id">Идентификатор пользователя</param>
     /// <returns>Пользователя в виде объекта <c>User</c></returns>
     Task<User?> GetById(int id);
+
+    /// <summary>
+    /// Возвращает пользователя по email
+    /// </summary>
+    /// <param name="email">Email пользователя</param>
+    /// <returns>Пользователя в виде объекта <c>User</c></returns>
+    Task<User?> GetByEmail(string email);
 }

@@ -9,17 +9,30 @@ namespace HotelWebApp.MIddlewares;
 public class ErrorHandlerMiddleware
 {
     /// <summary>
+    /// Фабрика для создания логгера
+    /// </summary>
+    private readonly ILoggerFactory _loggerFactory;
+    
+    /// <summary>
+    /// Логгер для вывода внутренних ошибок сервера
+    /// </summary>
+    private ILogger<Program> _logger;
+    
+    /// <summary>
     /// Ссыка на следущий middleware
     /// </summary>
     private RequestDelegate next;
 
     /// <summary>
-    /// Конструктор обработчика принимает ссылку на следущий middleware
+    /// Конструктор обработчика принимает ссылку на следущий middleware,
+    /// инициализирует логгер при помощи фабрики
     /// </summary>
     /// <param name="next">Ссылка на следуший middleware</param>
     public ErrorHandlerMiddleware(RequestDelegate next)
     {
         this.next = next;
+        _loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        _logger = _loggerFactory.CreateLogger<Program>();
     }
 
     /// <summary>
@@ -45,6 +58,7 @@ public class ErrorHandlerMiddleware
         }
         catch (Exception e)
         {
+            _logger.LogError(e.Message);
             var problemDetails = new ProblemDetails();
             
             context.Response.Headers.ContentType = "application/json; charset=utf-8";
